@@ -1,0 +1,1 @@
+{"version":3,"sources":["main.js"],"names":["foo","console","log"],"mappings":"CAAA,WAEA,GAAAA,GAAA,CAEAC,SAAAC,IAAAF","file":"bundle.js","sourcesContent":["(function() {\n\n  var foo = 1;\n  \n    console.log( foo );\n})();"],"sourceRoot":"/source/"}
