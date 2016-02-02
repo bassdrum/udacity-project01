@@ -16,10 +16,12 @@
       1,
       "always"
     ],
-    "no-console": 1
+    "no-console": 1,
+    "no-unused-vars": 1
   },
   "env": {
-    "browser": true
+    "browser": true,
+    "jquery": true
   },
   "extends": "eslint:recommended"
 }

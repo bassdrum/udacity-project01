@@ -6658,4 +6658,10 @@ button.close {
     display: none !important;
   }
 }
-/* Section's title */
+label {
+  font-weight: normal;
+}
+label.required:after {
+  content: ' *';
+  color: #d9534f;
+}

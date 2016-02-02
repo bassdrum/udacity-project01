@@ -16,26 +16,32 @@
   <div class="container">
     
     <div class="step step_form" id="regForm">
-      <h1>Sign Up</h1>
-      <form>
+      <h1>One short step</h1>
+      <p class="text-muted">Please fill the form below and you'll be able to use our fantastic event planner.</p>
+      <form novalidate>
         <div class="form-group">
-          <label for="regName">Your name</label>
-          <input type="email" class="form-control" id="regName" placeholder="Your name">
+          <label for="regName">How about your <strong>name</strong>?</label>
+          <input type="text" class="form-control" id="regName" placeholder="First name" autofocus required minlength="10">
+          <span class="help-block hidden"></span>
         </div>
         <div class="form-group">
-          <label for="regEmail">Email address</label>
-          <input type="email" class="form-control" id="regEmail" placeholder="Email address">
+          <label for="regEmail"><strong>Email address</strong> to contact you in case of emergency</label>
+          <input type="email" class="form-control" id="regEmail" placeholder="Email address" required>
+          <span class="help-block hidden"></span>
         </div>
         <div class="form-group">
-          <label for="regPwd">Password</label>
-          <input type="password" class="form-control" id="regPwd" placeholder="Password">
+          <label for="regPwd"><strong>Password</strong> to help us keep your events secure</label>
+          <input type="password" class="form-control" id="regPwd" placeholder="Password" required pattern="(?=^.{8,}$)((?=.*\d)|(?=.*\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$">
         </div>
         <button type="submit" class="btn btn-success">Sign Up</button>
       </form>
     </div>
   </div>
-
-  <!-- Concatenated and minified project css -->
+  
+  <!-- 3rd party JS -->
+  <script src="js/3rdparty.js"></script>
+  
+  <!-- Concatenated and minified project js -->
   <script src="js/bundle.js"></script>
 </body>
 </html>
