@@ -6665,3 +6665,10 @@ label.required:after {
   content: ' *';
   color: #d9534f;
 }
+.form-group .list-unstyled {
+  margin-top: .75em;
+  color: #777777;
+}
+.form-group .list-unstyled li.text-success {
+  font-weight: bold;
+}

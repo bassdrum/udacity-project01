@@ -48,33 +48,68 @@
   var moduleName = 'validate';
 
   function Module (element, options) {
-    this.element      = element;
-    this._name        = moduleName;
-    this._defaults    = $.fn[moduleName].defaults;
-    this.options      = $.extend(true, {}, this._defaults, options );
-    this.$element     = null;
-    this.$parent      = null;
-    this.$helpBlock   = null;
-    this.everValue    = null;
+    this.element        = element;
+    this._name          = moduleName;
+    this._defaults      = $.fn[moduleName].defaults;
+    this.options        = $.extend(true, {}, this._defaults, options );
+    this.elementType    = this.element.type;
+    this.$element       = null;
+    this.$parent        = null;
+    this.$helpBlock     = null;
+    this.$messagesList  = null; // used only for 'password' fields
+    this.everValue      = null;
+    
     
     this.init();
   }
   
   Module.prototype.init = function () {
+    this.buildDom();
     this.buildCache();
     this.bindEvents();
+  };
+  
+  Module.prototype.buildDom = function() {
+    if (this.elementType == 'password') {
+      var $ul = $('<ul class="list-unstyled"></ul>');
+      
+      for (var key in this.options.messages.password) {
+        var element = '<li><span class="glyphicon glyphicon-ok-circle"></span> ' 
+                      + this.options.messages.password[key] 
+                      + '</li>';
+        
+        $ul.append(element);
+      }
+      
+      $(this.element).closest('.form-group').append($ul);
+    }
   };
   
   Module.prototype.buildCache = function() {
     this.$element   = $(this.element);
     this.$parent    = this.$element.closest('.form-group');
     this.$helpBlock = this.$element.siblings('.help-block');
+    
+    if (this.elementType == 'password') {
+      this.$messagesList = this.$parent.find('ul.list-unstyled');
+    }
   };
   
   Module.prototype.bindEvents = function() {
     var module = this;
     
-    module.$element.on('keyup'+'.'+module._name, function() {
+    module.$element.on('focus' + '.' + module._name, function() {
+      if ( !module.everValue ) {
+        module.everValue = module.$element.val();
+      }
+    });
+    
+    module.$element.on('input' + '.' + module._name, function() {
+      // password
+      if ( module.elementType == 'password' ) {
+        module.processPasswordMessages();
+      }
+      
       if ( module.isValid() ) {
         module.cleanUp();
       } else if( module.everValue ) {
@@ -82,13 +117,12 @@
       }
     });
     
-    module.$element.on('focus'+'.'+module._name, function() {
-      if ( !module.everValue ) {
-        module.everValue = module.$element.val();
+    module.$element.on('blur' + '.' +  module._name, function() {
+      // password
+      if ( module.elementType == 'password' ) {
+        module.processPasswordMessages();
       }
-    });
-    
-    module.$element.on('blur'+'.'+module._name, function() {
+      
       if ( !module.$element.val() && !module.everValue ) {
         return;
       }
@@ -101,21 +135,67 @@
     });
   };
   
-  Module.prototype.isValid = function() {
-    var type = this.$element.attr('type');
+  Module.prototype.processPasswordMessages = function() {
+    var result = this.validatePassword();
+    var counter = 0;
     
-    return this.element.checkValidity();
-    /*
-    if (type == 'password') {
-      // ...
-    } else {
+    for (var key in result.conditions) {
+      counter++;
+      
+      if (result.conditions[key]) {
+        this.$messagesList.find('li:nth-child(' + counter + ')').addClass('text-success strong');
+      } else {
+        this.$messagesList.find('li:nth-child(' + counter + ')').removeClass('text-success');
+      }
+    }
+  }
+  
+  Module.prototype.isValid = function() {
+    // regular field
+    if ( this.elementType != 'password' ) {
       return this.element.checkValidity();
-    }*/
+    }
+    
+    // password
+    return this.validatePassword().isValid;
+  };
+  
+  Module.prototype.validatePassword = function() {
+    var minLength = /^[\s\S]{8,}$/;
+    var upper = /[A-Z]/;
+    var lower = /[a-z]/;
+    var number = /[0-9]/;
+    var special = /[ !"#$%&'()*+,\-./:;<=>?@[\\\]^_`{|}~]/;
+    var password = this.$element.val();
+    var result = {};
+    
+    result.conditions = {};
+    result.isValid = true;
+    
+    result.conditions.minLength = minLength.test(password) ? true : false;
+    result.conditions.upper = upper.test(password) ? true : false;
+    result.conditions.lower = lower.test(password) ? true : false;
+    result.conditions.number = number.test(password) ? true : false;
+    result.conditions.special = special.test(password) ? true : false;
+    
+    for (var key in result.conditions) {
+      if( result.conditions[key] === false ) result.isValid = false;
+    }
+    
+    if (result.isValid) {
+      this.element.setCustomValidity('');
+    } else {
+      this.element.setCustomValidity('invalid');
+    }
+    
+    
+    
+    return result;
   };
   
   Module.prototype.cleanUp = function() {
-    this.$parent.removeClass('has-error');
     this.$helpBlock.addClass('hidden').html();
+    this.$parent.removeClass('has-error');
   };
   
   Module.prototype.showError = function() {
@@ -141,7 +221,7 @@
     var message = this.options.messages[key];
     
     if (key == 'tooShort' || key == 'tooLong') {
-      message = message.replace('NNN', this.$element.attr('minlength'));
+      message = message.replace('%N%', this.$element.attr('minlength'));
     }
     
     return message;
@@ -161,7 +241,14 @@
   $.fn[moduleName].defaults = {
     messages: {
       valueMissing: 'The field is required',
-      tooShort: 'At least NNN characters'
+      tooShort: 'At least %N% characters',
+      password: {
+        minlength: 'At least 8 characters long',
+        upper: 'Contains uppercase letters',
+        lower: 'Contains lowercase letters',
+        number: 'Contains numbers',
+        special: 'Contains punctuation'
+      }
     }
   };
 

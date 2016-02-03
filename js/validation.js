@@ -1,9 +1,9 @@
-+function ($, window, document, undefined) {
++function ($) {
 
   $('#regName').validate({
     messages: {
       valueMissing: 'We really need your name, mate',
-      tooShort: 'The name is too short, bro (at least NNN characters)'
+      tooShort: 'The name is too short, bro (at least %N% characters)'
     }
   });
   
@@ -16,4 +16,4 @@
   
   $('#regPwd').validate();
   
-}( jQuery, window, document );
+}(jQuery);
