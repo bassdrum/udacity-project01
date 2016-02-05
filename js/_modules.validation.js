@@ -1,51 +1,49 @@
+// DESCRIPTION
+// ============================================================
+// validator manages validation process on a field level.
+// it means, that you can init it on a specific field
+// pass options (messages), 
+// set constraints using html attributes (see Constraint Validation API)
+// and enjoy the process
+//
+// important: validator supports slightly different logic for regular fields and password* fields
+// * password validation options are hardcoded
+
+// USAGE
+// ============================================================
+// $('#regPwd').validator(options);
+
+// OPTIONS
+// ============================================================
+// take a look at module's default options
+// it is allowed to redefine any predefined error messages
+// $('#regName').validator({
+//      messages: {
+//      valueMissing: 'We really need your name, mate',
+//      tooShort: 'The name is too short, bro (at least %N% characters)'
+//    }
+//  });
+
+// GENERATED MARKUP
+// ============================================================
+// in case of password field
+// module generates additional markup (to provide hints)
+// <ul class="list-unstyled">
+//   <li><span class="glyphicon glyphicon-ban-circle"></span> Hint text</li>
+//   ...
+//   <li><span class="glyphicon glyphicon-ban-circle"></span> Hint text</li>
+// </ul>  
+
+// API
+// ============================================================
+// you can force validation on a field
+// $('#regName').validator('forceValidation');
+
+
 +function ($) {
-  // как валидировать?
-  // 1. определить способ валидации (зависит от типа поля)
-  // 2. добавить обработчик keyup на поле
-  // 2.1 проверяю валидно ли поле? (вот тут логика валидации будет зависеть от типа поля)
-  // 2.2 если нет, ничего не делаю
-  // 2.3 если да, setCustomValidity() + удаляю has-error (не важно, был он или нет)
-  // 3. добавить обработчик blur 
-  // 3.1 поле валидно? (вот тут логика валидации будет зависеть от типа поля)
-  // 3.2 да — ничего не делаю
-  // 3.3 нет - setCustomValidity(false), + добавляю has-error
-  
-  // вторая итерация 
-  // научиться обрабатывать больше одной ошибки
-  // 1. получаю объект validity
-  // 2. прохожу по свойствам
-  // 3. нахожу true и сопоставляю с объектом ошибок и текстов уникальным для данного поля
-  // 4. выдаю именно эту ошибку
-  
-  // создаю объект, в котором есть стандартные тексты ошибок для стандартных кейсов
-  // возможно с зависимостью от типа поля
-  // далее при ошибке валидации, я сначала смотрю нет ли объекта с сообщениями об ошибках в параметрах инициализации
-  // если нет, дергаю подходящее сообщение из предопределенного объекта
-  
-  // третья итерация
-  // инициализировать плагин на поле
-  // откуда брать сообщения об ошибке?
-  // оставить в html?
-  
-  
-  // четвертая итерация
-  // усложнить логику валидации
-  // не валидировать поле которое было и осталось пустым
-  // валидировать поле на keyup, если поле уже когда то было отвалидировано в инвалид
-  
-  // пятая итерация
-  // добавить валидацию для пароля
-  
-  // шестая итерация
-  // вынести валидацию на уровень формы
-  
-  // последняя итерация 
-  // покрыть код комментариями
-  
-  
   'use strict';
   
-  var moduleName = 'validate';
+  var moduleName = 'validator';
 
   function Module (element, options) {
     this.element        = element;
@@ -58,7 +56,6 @@
     this.$helpBlock     = null;
     this.$messagesList  = null; // used only for 'password' fields
     this.everValue      = null;
-    
     
     this.init();
   }
@@ -74,14 +71,14 @@
       var $ul = $('<ul class="list-unstyled"></ul>');
       
       for (var key in this.options.messages.password) {
-        var element = '<li><span class="glyphicon glyphicon-ok-circle"></span> ' 
+        var element = '<li><span class="glyphicon glyphicon-ban-circle"></span> ' 
                       + this.options.messages.password[key] 
                       + '</li>';
         
         $ul.append(element);
       }
       
-      $(this.element).closest('.form-group').append($ul);
+      $(this.element).closest('div').append($ul);
     }
   };
   
@@ -89,10 +86,7 @@
     this.$element   = $(this.element);
     this.$parent    = this.$element.closest('.form-group');
     this.$helpBlock = this.$element.siblings('.help-block');
-    
-    if (this.elementType == 'password') {
-      this.$messagesList = this.$parent.find('ul.list-unstyled');
-    }
+    this.$messagesList = this.$parent.find('ul.list-unstyled');
   };
   
   Module.prototype.bindEvents = function() {
@@ -105,24 +99,14 @@
     });
     
     module.$element.on('input' + '.' + module._name, function() {
-      // password
-      if ( module.elementType == 'password' ) {
-        module.processPasswordMessages();
-      }
-      
       if ( module.isValid() ) {
         module.cleanUp();
-      } else if( module.everValue ) {
+      } else if ( module.everValue ) {
         module.showError();
       }
     });
     
     module.$element.on('blur' + '.' +  module._name, function() {
-      // password
-      if ( module.elementType == 'password' ) {
-        module.processPasswordMessages();
-      }
-      
       if ( !module.$element.val() && !module.everValue ) {
         return;
       }
@@ -133,34 +117,23 @@
         module.showError();
       }
     });
+    
+    module.$element.on('input' + '.' + module._name + ', ' + 'blur' + '.' +  module._name , function() {
+      if ( module.elementType == 'password' ) {
+        module.processPasswordMessages();
+      }
+    });
   };
   
-  Module.prototype.processPasswordMessages = function() {
-    var result = this.validatePassword();
-    var counter = 0;
-    
-    for (var key in result.conditions) {
-      counter++;
-      
-      if (result.conditions[key]) {
-        this.$messagesList.find('li:nth-child(' + counter + ')').addClass('text-success strong');
-      } else {
-        this.$messagesList.find('li:nth-child(' + counter + ')').removeClass('text-success');
-      }
-    }
-  }
-  
   Module.prototype.isValid = function() {
-    // regular field
     if ( this.elementType != 'password' ) {
       return this.element.checkValidity();
     }
     
-    // password
-    return this.validatePassword().isValid;
+    return this.isValid_password().isValid;
   };
   
-  Module.prototype.validatePassword = function() {
+  Module.prototype.isValid_password = function() {
     var minLength = /^[\s\S]{8,}$/;
     var upper = /[A-Z]/;
     var lower = /[a-z]/;
@@ -188,14 +161,7 @@
       this.element.setCustomValidity('invalid');
     }
     
-    
-    
     return result;
-  };
-  
-  Module.prototype.cleanUp = function() {
-    this.$helpBlock.addClass('hidden').html();
-    this.$parent.removeClass('has-error');
   };
   
   Module.prototype.showError = function() {
@@ -203,6 +169,11 @@
     
     this.$parent.addClass('has-error');
     this.$helpBlock.removeClass('hidden').html(message);
+  };
+  
+  Module.prototype.cleanUp = function() {
+    this.$helpBlock.addClass('hidden').html();
+    this.$parent.removeClass('has-error');
   };
   
   Module.prototype.getErrorMessage = function() {
@@ -220,12 +191,52 @@
   Module.prototype.formatMessage = function(key) {
     var message = this.options.messages[key];
     
-    if (key == 'tooShort' || key == 'tooLong') {
+    if (key == 'tooShort') {
       message = message.replace('%N%', this.$element.attr('minlength'));
     }
     
     return message;
   };
+  
+  Module.prototype.processPasswordMessages = function() {
+    var result = this.isValid_password();
+    var counter = 0;
+    
+    for (var key in result.conditions) {
+      counter++;
+      
+      if (result.conditions[key]) {
+        this.$messagesList
+          .find('li:nth-child(' + counter + ')')
+          .addClass('text-success strong')
+          .find('.glyphicon')
+          .removeClass('glyphicon-ban-circle')
+          .addClass('glyphicon-ok-circle');
+      } else {
+        this.$messagesList
+          .find('li:nth-child(' + counter + ')')
+          .removeClass('text-success')
+          .find('.glyphicon')
+          .removeClass('glyphicon-ok-circle')
+          .addClass('glyphicon-ban-circle');
+      }
+    }
+  }
+  
+  // API methods
+  Module.prototype.forceValidation = function() {
+    if ( this.isValid() ) {
+      this.cleanUp();
+    } else {
+      this.showError();
+    }
+    
+    if ( this.elementType == 'password' ) {
+      this.processPasswordMessages();
+    }
+    
+    return false;
+  }
   
   $.fn[moduleName] = function (option) {
     return this.each(function () {
@@ -242,8 +253,8 @@
     messages: {
       valueMissing: 'The field is required',
       tooShort: 'At least %N% characters',
-      password: {
-        minlength: 'At least 8 characters long',
+      password: { 
+        minlength: 'At least 8 characters long', // todo: get rid of hardcoded parameters
         upper: 'Contains uppercase letters',
         lower: 'Contains lowercase letters',
         number: 'Contains numbers',

@@ -12,11 +12,14 @@ label {
 .form-group {
   .list-unstyled {
     margin-top: .75em;
-    
     .text-muted();
     
-    li.text-success {
-      font-weight: bold;
+    li:not(.text-success) {
+      opacity: .65;
     }
   }
+}
+
+.help-block {
+  margin-bottom: .25em;
 }

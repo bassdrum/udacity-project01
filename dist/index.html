@@ -14,27 +14,136 @@
 </head>
 <body>
   <div class="container">
-    
-    <div class="step step_form" id="regForm">
-      <h1>One short step</h1>
-      <p class="text-muted">Please fill the form below and you'll be able to use our fantastic event planner.</p>
-      <form novalidate>
+    <div class="step step_form hidden">
+      <h1 class="col-sm-offset-2">Introduce yourself</h1>
+      <form novalidate id="registration" class="form-horizontal">
         <div class="form-group">
-          <label for="regName">How about your <strong>name</strong>?</label>
-          <input type="text" class="form-control" id="regName" placeholder="First name" autofocus required minlength="10">
-          <span class="help-block hidden"></span>
+          <label for="registration-name" class="col-sm-2 control-label">First name</label>
+          <div class="col-sm-10">
+            <input type="text" class="form-control" id="registration-name" placeholder="to greet you by name" autofocus required minlength="5">
+            <span class="help-block hidden"></span>
+          </div>
         </div>
         <div class="form-group">
-          <label for="regEmail"><strong>Email address</strong> to contact you in case of emergency</label>
-          <input type="email" class="form-control" id="regEmail" placeholder="Email address" required>
-          <span class="help-block hidden"></span>
+          <label for="registration-email" class="col-sm-2 control-label">Email address</label>
+          <div class="col-sm-10">
+            <input type="email" class="form-control" id="registration-email" placeholder="to contact you in case of emergency" required>
+            <span class="help-block hidden"></span>
+          </div>
         </div>
         <div class="form-group">
-          <label for="regPwd"><strong>Password</strong> to help us keep your events secure</label>
-          <input type="password" class="form-control" id="regPwd" placeholder="Password" required>
-          <!-- pattern="(?=^.{8,}$)((?=.*\d)|(?=.*\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$"-->
+          <label for="registration-pwd" class="col-sm-2 control-label">Password</label>
+          <div class="col-sm-10">
+            <input type="password" class="form-control" id="registration-pwd" placeholder="to help us keep your events secure" required>
+          </div>
         </div>
-        <button type="submit" class="btn btn-success">Sign Up</button>
+        
+        <div class="row">
+          <div class="col-sm-2"></div>
+          <div class="col-sm-10">
+            <div class="form-actions">
+              <button type="submit" class="btn btn-success">Sign Up</button>
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
+    <div class="step step_form">
+      <h1 class="col-sm-offset-2">Create Event</h1>
+      <form novalidate id="createEvent" class="form-horizontal">
+        <div class="form-group">
+          <label for="createEvent-name" class="col-sm-2 control-label required">Name</label>
+          <div class="col-sm-10">
+            <input type="text" class="form-control" id="createEvent-name" placeholder="short but informative name" autofocus required>
+            <span class="help-block hidden"></span>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="createEvent-type" class="col-sm-2 control-label">Type</label>
+          <div class="col-sm-10">
+            <input list="events" id="createEvent-type" class="form-control" placeholder="is it a stag party or what?">
+            <datalist id="events">
+              <option value="Birthday party">
+              <option value="Conference">
+              <option value="Talk">
+              <option value="Wedding">
+            </datalist>
+            <span class="help-block hidden"></span>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="createEvent-host" class="col-sm-2 control-label">Host</label>
+          <div class="col-sm-10">
+            <input type="text" class="form-control" id="createEvent-host" placeholder="could be an individual’s name or an organization">
+            <span class="help-block hidden"></span>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="createEvent-start-date" class="col-sm-2 control-label required">Starts</label>
+          <div class="col-sm-10 step-dateTime">
+            <div class="form-group step-dateTime-date">
+              <input type="text" class="form-control" id="createEvent-start-date" required>
+            </div>
+            <div class="form-group step-dateTime-time">
+              <input type="text" class="form-control" id="createEvent-start-time" required>
+            </div>
+            <a href="#" class="step-dateTime-add">+ End time</a>
+            <span class="help-block hidden"></span>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="createEvent-end-date" class="col-sm-2 control-label">Ends</label>
+          <div class="col-sm-10 step-dateTime">
+            <div class="form-group step-dateTime-date">
+              <input type="text" class="form-control" id="createEvent-end-date" required>
+            </div>
+            <div class="form-group step-dateTime-time">
+              <input type="text" class="form-control" id="createEvent-end-time" required>
+            </div>
+            <a href="#" class="step-dateTime-add">Remove</a>
+            <span class="help-block hidden"></span>
+          </div>
+        </div>
+        <div class="form-group step-geoLocation" id="createEvent-geo">
+          <label for="createEvent-location" class="col-sm-2 control-label">Location</label>
+          <div class="col-sm-10">
+            <div class="step-geoLocation-wrapper">
+              <input type="text" class="form-control" id="createEvent-location" placeholder="my place or yours?" required>
+              <span title="Locate me" class="step-geoLocation-icon glyphicon glyphicon-pushpin hidden"></span>
+              <span class="help-block hidden"></span>
+            </div>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="createEvent-guest01-name" class="col-sm-2 control-label required">Guests</label>
+          <div class="col-sm-10 step-guestsList">
+            <div class="form-group step-guestsList-name">
+              <input type="text" class="form-control" id="createEvent-guest01-name" placeholder="guest's name">
+            </div>
+            <div class="form-group step-guestsList-email">
+              <input type="email" class="form-control" id="createEvent-guest01-email" placeholder="guest's email">
+            </div>
+            <a href="#" class="step-guestsList-add">+ Add another guest</a>
+            <span class="help-block hidden"></span>
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label for="createEvent-message" class="col-sm-2 control-label">Message</label>
+          <div class="col-sm-10">
+            <textarea class="form-control" id="createEvent-message" placeholder="write something funny"></textarea>
+            <span class="help-block hidden"></span>
+          </div>
+        </div>
+        
+        <div class="row">
+          <div class="col-sm-2"></div>
+          <div class="col-sm-10">
+            <div class="form-actions">
+              <button type="submit" class="btn btn-success">Create Event & Send Invites</button>
+            </div>
+          </div>
+        </div>
       </form>
     </div>
   </div>
@@ -43,6 +152,6 @@
   <script src="js/3rdparty.js"></script>
   
   <!-- Concatenated and minified project js -->
-  <script src="js/bundle.js"></script>
+  <script src="js/master.js"></script>
 </body>
 </html>

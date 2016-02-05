@@ -3,7 +3,7 @@ var gulp          = require('gulp'),
     autoprefixer  = require('gulp-autoprefixer'),
     cssnano       = require('gulp-cssnano'),
     sourcemaps    = require('gulp-sourcemaps'),
-    concat        = require('gulp-concat'),
+    include       = require('gulp-include'),
     uglify        = require('gulp-uglify'),
     browserSync   = require('browser-sync').create()
     reload        = browserSync.reload,
@@ -27,12 +27,15 @@ gulp.task('styles', function(){
 });
 
 gulp.task('scripts', function(){
-  gulp.src('./js/**/*.js')
+  gulp.src('./js/master.js')
     .pipe(sourcemaps.init())
-    .pipe(concat('bundle.js'))
+    .pipe( include() )
+    .pipe(eslint())
+    .pipe(eslint.format())
+    .pipe(eslint.failAfterError())
     .pipe(uglify())
     .pipe(sourcemaps.write('maps'))
-    .pipe(gulp.dest('./dist/js'))
+    .pipe(gulp.dest('./dist/js/'))
     .pipe(reload({stream: true}));
 });
 
@@ -43,19 +46,12 @@ gulp.task('copy-html', function(){
     .pipe(reload({stream: true}));
 });
 
-gulp.task('lint', function () {
-  return gulp.src(['./js/**/*.js'])
-    .pipe(eslint())
-    .pipe(eslint.format())
-    .pipe(eslint.failAfterError());
-});
-
-gulp.task('default', ['styles', 'lint', 'scripts', 'copy-html'], function(){
+gulp.task('default', ['styles', 'scripts', 'copy-html'], function(){
   browserSync.init({
     server: './dist/'
   });
   
   gulp.watch('./less/**/*.less', ['styles']);
-	gulp.watch('./js/**/*.js', ['lint', 'scripts']);
+	gulp.watch('./js/**/*.js', ['scripts']);
 	gulp.watch('./index.html', ['copy-html']);
 });

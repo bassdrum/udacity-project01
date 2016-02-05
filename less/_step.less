@@ -1,0 +1,91 @@
+.step {
+  
+  .step-dateTime {
+    .form-group {
+      margin-left: 0;
+      margin-right: 0;
+      margin-bottom: 0;
+    }
+    
+    .step-dateTime-date,
+    .step-dateTime-time {
+      float: left;
+      width: 10em;
+      margin-right: 1em;
+    }
+    
+    .step-dateTime-time {
+      width: 8em;
+    }
+    
+    .step-dateTime-add {
+      float: left;
+      display: inline-block;
+      margin-top: .5em;
+    }
+  }
+  
+  .step-guestsList {
+    .form-group {
+      margin-left: 0;
+      margin-right: 0;
+      margin-bottom: 0;
+    }
+    
+    .step-guestsList-name,
+    .step-guestsList-email {
+      float: left;
+      width: 35%;
+      margin-right: 1em;
+      
+      @media (max-width: @screen-sm-min) {
+        width: 100%;
+        margin-bottom: .65em;
+      }
+    }
+    
+    .step-guestsList-add {
+      float: left;
+      display: inline-block;
+      margin-top: .5em;
+      
+      @media (max-width: @screen-sm-min) {
+        margin-top: 0;
+      }
+    }
+  }
+  
+  .step-geoLocation {
+    .step-geoLocation-wrapper {
+      position: relative;
+    }
+    
+    .step-geoLocation-icon {
+      position: absolute;
+      right: 7px;
+      top: 6px;
+      padding: 4px;
+      cursor: pointer;
+      
+      &:hover {
+        opacity: .75;
+      }
+    }
+  }
+  
+}
+
+.step_form {
+  h1 {
+    margin-top: 1em;
+    margin-bottom: 1em;
+    
+    @media (max-width: @screen-sm-min) {
+      margin-bottom: .65em;
+    }
+  }
+  
+  .form-actions {
+    margin-top: .5em;
+  }
+}
