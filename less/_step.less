@@ -15,7 +15,7 @@
     }
     
     .step-dateTime-time {
-      width: 8em;
+      width: 7.5em;
     }
     
     .step-dateTime-add {
@@ -29,7 +29,6 @@
     .form-group {
       margin-left: 0;
       margin-right: 0;
-      margin-bottom: 0;
     }
     
     .step-guestsList-name,
@@ -44,14 +43,19 @@
       }
     }
     
-    .step-guestsList-add {
+    .step-guestsList-trigger {
       float: left;
       display: inline-block;
       margin-top: .5em;
       
       @media (max-width: @screen-sm-min) {
-        margin-top: 0;
+        margin-top: -.15em;
+        margin-bottom: 1.25em;
       }
+    }
+    
+    .step-guestsList-trigger_remove {
+      margin-right: 1em;
     }
   }
   
@@ -72,7 +76,6 @@
       }
     }
   }
-  
 }
 
 .step_form {
@@ -83,6 +86,14 @@
     @media (max-width: @screen-sm-min) {
       margin-bottom: .65em;
     }
+    
+    @media (min-width: @screen-sm-min) {
+      padding-left: 5px;
+    }
+  }
+  
+  fieldset {
+    margin-bottom: 1.75em;
   }
   
   .form-actions {

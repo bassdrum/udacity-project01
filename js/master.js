@@ -7,5 +7,5 @@ var UI = {};
 
 $(document).ready(function () {
   UI.registration();
-  UI.createEvent();
+  UI.createEvent.when();
 });

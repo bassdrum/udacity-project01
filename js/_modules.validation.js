@@ -237,6 +237,7 @@
     
     return false;
   }
+  // end of API methods
   
   $.fn[moduleName] = function (option) {
     return this.each(function () {
