@@ -136,32 +136,28 @@
             </div>
           </div>
         </fieldset>
+        
+        
+        
+        
         <fieldset>
           <div class="form-group">
-            <label for="createEvent-guest01-name" class="col-sm-2 control-label required">Guests</label>
-            <div class="col-sm-10 step-guestsList">
-              <div class="form-group step-guestsList-name">
-                <input type="text" class="form-control" id="createEvent-guest01-name" placeholder="guest's name">
-              </div>
-              <div class="form-group step-guestsList-email">
-                <input type="email" class="form-control" id="createEvent-guest01-email" placeholder="guest's email">
-              </div>
-              <a href="#" class="step-guestsList-trigger step-guestsList-trigger_remove">Remove</a>
-              <a href="#" class="step-guestsList-trigger step-guestsList-trigger_add">+ Guest</a>
-              <span class="help-block hidden"></span>
-            </div>
+            <label for="createEvent-guest01-name" class="col-sm-2 control-label">Guests</label>
+            <div class="col-sm-10">
             
-            <div class="col-sm-offset-2 col-sm-10 step-guestsList">
-              <div class="form-group step-guestsList-name">
-                <input type="text" class="form-control" placeholder="guest's name">
-              </div>
-              <div class="form-group step-guestsList-email">
-                <input type="email" class="form-control" placeholder="guest's email">
-              </div>
-              <a href="#" class="step-guestsList-trigger step-guestsList-trigger_remove">Remove</a>
-              <span class="help-block hidden"></span>
+              <ul class="step-guestsList">
+                <!-- guest -->
+                <li class="step-guestsList-guest clearfix">
+                  <div class="form-group step-guestsList-guest-name">
+                    <input type="text" class="form-control" placeholder="guest's name">
+                  </div>
+                  <a href="#" class="step-guestsList-trigger step-guestsList-trigger_remove hidden">Remove</a>
+                  <a href="#" class="step-guestsList-trigger step-guestsList-trigger_add">+ Guest</a>
+                </li>
+                <!-- /guest -->
+              </ul>
+              
             </div>
-            
           </div>
           <div class="form-group">
             <label for="createEvent-message" class="col-sm-2 control-label">Message</label>
@@ -171,6 +167,10 @@
             </div>
           </div>
         </fieldset>
+        
+        
+        
+        
         <div class="row">
           <div class="col-sm-2"></div>
           <div class="col-sm-10">

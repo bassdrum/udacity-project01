@@ -8,4 +8,5 @@ var UI = {};
 $(document).ready(function () {
   UI.registration();
   UI.createEvent.when();
+  UI.createEvent.guests();
 });
