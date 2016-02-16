@@ -1,0 +1,34 @@
+.spinner {
+  display: inline-block;
+  text-align: center;
+}
+
+.spinner-spinner {
+  display: inline-block;
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  border: solid 3px rgba(0, 0, 0, 0.05);
+  border-top-color: green;
+  animation: spinnerRotate 1.5s infinite linear;
+}
+
+.spinner_xs {
+  .spinner-spinner {
+    width: 16px;
+    height: 16px;
+    border-width: 2px;
+  }
+}
+
+.spinner_global {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  margin-top: -75px;
+  margin-left: -75px;
+}
+
+#spinnerRotate {
+  @keyframes spinnerRotate { 100% {transform:rotate(360deg)} }
+}

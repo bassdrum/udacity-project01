@@ -6675,83 +6675,134 @@ label.required:after {
 .help-block {
   margin-bottom: .25em;
 }
-.step .step-dateTime .form-group {
+.form h1 {
+  margin-top: 1em;
+  margin-bottom: 1em;
+}
+@media (max-width: 768px) {
+  .form h1 {
+    margin-bottom: .65em;
+  }
+}
+@media (min-width: 768px) {
+  .form h1 {
+    padding-left: 5px;
+  }
+}
+.form fieldset {
+  margin-bottom: 1.75em;
+}
+.form .form-actions {
+  margin-top: .5em;
+}
+.form .dateTime .form-group {
   margin-left: 0;
   margin-right: 0;
   margin-bottom: 0;
 }
-.step .step-dateTime .step-dateTime-date,
-.step .step-dateTime .step-dateTime-time {
+.form .dateTime .dateTime-date,
+.form .dateTime .dateTime-time {
   float: left;
   width: 10em;
   margin-right: 1em;
 }
-.step .step-dateTime .step-dateTime-time {
+.form .dateTime .dateTime-time {
   width: 7.5em;
 }
-.step .step-dateTime .step-dateTime-add {
+.form .dateTime .dateTime-add {
   float: left;
   display: inline-block;
   margin-top: .5em;
 }
-.step .step-guestsList {
+.form .guestsList {
   margin: 0;
   padding: 0;
 }
-.step .step-guestsList .step-guestsList-guest {
+.form .guestsList .guestsList-guest {
   list-style-type: none;
 }
-.step .step-guestsList .step-guestsList-guest-name {
+.form .guestsList .guestsList-guest-name {
   float: left;
   width: 45%;
   margin-left: 0;
   margin-right: 1em;
 }
 @media (max-width: 768px) {
-  .step .step-guestsList .step-guestsList-guest-name {
+  .form .guestsList .guestsList-guest-name {
     margin-bottom: .65em;
   }
 }
-.step .step-guestsList .step-guestsList-trigger {
+.form .guestsList .guestsList-trigger {
   float: left;
   display: inline-block;
   margin-top: .5em;
 }
-.step .step-guestsList .step-guestsList-trigger_remove {
+.form .guestsList .guestsList-trigger_remove {
   margin-right: 1em;
 }
-.step .step-geoLocation .step-geoLocation-wrapper {
+.form .geoLocation .geoLocation-wrapper {
   position: relative;
 }
-.step .step-geoLocation .step-geoLocation-icon {
+.form .geoLocation .geoLocation-icon {
   position: absolute;
   right: 7px;
   top: 6px;
   padding: 4px;
   cursor: pointer;
 }
-.step .step-geoLocation .step-geoLocation-icon:hover {
+.form .geoLocation .geoLocation-icon:hover {
   opacity: .75;
 }
-.step_form h1 {
-  margin-top: 1em;
-  margin-bottom: 1em;
+.form .geoLocation .spinner {
+  position: absolute;
+  right: 9px;
+  top: 9px;
 }
-@media (max-width: 768px) {
-  .step_form h1 {
-    margin-bottom: .65em;
+.spinner {
+  display: inline-block;
+  text-align: center;
+}
+.spinner-spinner {
+  display: inline-block;
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  border: solid 3px rgba(0, 0, 0, 0.05);
+  border-top-color: green;
+  -webkit-animation: spinnerRotate 1.5s infinite linear;
+          animation: spinnerRotate 1.5s infinite linear;
+}
+.spinner_xs .spinner-spinner {
+  width: 16px;
+  height: 16px;
+  border-width: 2px;
+}
+.spinner_global {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  margin-top: -75px;
+  margin-left: -75px;
+}
+@-webkit-keyframes spinnerRotate {
+  100% {
+    -webkit-transform: rotate(360deg);
+            transform: rotate(360deg);
   }
 }
-@media (min-width: 768px) {
-  .step_form h1 {
-    padding-left: 5px;
+@keyframes spinnerRotate {
+  100% {
+    -webkit-transform: rotate(360deg);
+            transform: rotate(360deg);
   }
 }
-.step_form fieldset {
-  margin-bottom: 1.75em;
-}
-.step_form .form-actions {
-  margin-top: .5em;
+.dim {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #f5f5f5;
 }
 /*!
  * Timepicker Component for Twitter Bootstrap

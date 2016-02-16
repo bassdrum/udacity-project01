@@ -267,6 +267,59 @@ var UI = {};
   };
 
 }(jQuery);
+UI.core = {};
+
+UI.core.applicationState = 'login';
+
+UI.core.init = function() {
+  UI.core.viewBuilder();
+  // у меня всего три простых шага
+  // 1. спиннер > логин
+  // 2. спиннер > список ивентов
+  // 3. спиннер > форма создания ивента
+};
+
+UI.core.viewBuilder = function() {
+  var $registration = $('.registration');
+  var $createEvent  = $('.createEvent');
+  var $list         = $('.eventsList');
+  var $dim          = $('.dim');
+  var $spinner      = $('.spinner_global');
+  var $body         = $('body');
+  
+  // login state
+  if (UI.core.applicationState == 'login') {
+    showSpinner();
+    
+    setTimeout(function(){
+      hideSpinner();
+      $registration.removeClass('hidden');
+    }, 1000);
+  }
+  
+  // events list state
+  if (UI.core.applicationState == 'list') {
+    showSpinner();
+    
+    setTimeout(function(){
+      hideSpinner();
+      $registration.addClass('hidden');
+      $list.removeClass('hidden');
+    }, 1000);
+  }
+  
+  function showSpinner() {
+    $body.addClass('modal-open');
+    $dim.removeClass('hidden');
+    $spinner.removeClass('hidden');
+  }
+  
+  function hideSpinner() {
+    $body.removeClass('modal-open');
+    $dim.addClass('hidden');
+    $spinner.addClass('hidden');
+  }
+};
 UI.registration = function() {
   var $form = $('#registration');
   var $name = $('#registration-name');
@@ -295,12 +348,13 @@ UI.registration = function() {
     $email.validator('forceValidation');
     $pwd.validator('forceValidation');
     
+    e.preventDefault();
+    
     if ($form[0].checkValidity() === false) {
-      e.preventDefault();
-      console.log('invalid');
       return false;
     } else {
-      console.log('valid');
+      UI.core.applicationState = 'list';
+      UI.core.viewBuilder();
     }
   });
 }
@@ -317,53 +371,25 @@ UI.createEvent.when = function() {
   var $endDate        = $('#createEvent-end-date-group');
   var $endTime        = $('#createEvent-end-time');
 
-  var d       = new Date();
-  var d_start = new Date( d.getFullYear(), d.getMonth(), d.getDate(), d.getHours() + 1 );
-  var d_end   = new Date();
+  var now             = new Date();
+  var d_start         = new Date( now.getFullYear(), now.getMonth(), now.getDate(), now.getHours() + 1 );
+  var d_end           = new Date( now.getFullYear(), now.getMonth(), now.getDate(), now.getHours() + 2 );
   
-  initPickers();
+  var isUpdating      = false;
   
-  $startDate.on('changeDate', function() {
-    d_start = update_d_start();
-    d_end = catch_up_d_end();
-    updateEndPickers();
-  });
+  init();
   
-  $startTime.timepicker().on('changeTime.timepicker blur', function() {
-    if ( parseTime( $startTime.val() ).hours === undefined || parseTime( $startTime.val() ).minutes === undefined ) {
-      $startTime.timepicker('setTime', d_start.getHours() + ':00');
-    }
-    
-    d_start = update_d_start();
-    d_end = catch_up_d_end();
-    updateEndPickers();
-  });
+  updateDate('start', d_start);
+  updateDate('end', d_end);
   
-  $endDate.on('changeDate', function() {
-    d_end = update_d_end();
-  });
+  subscribe();
   
-  $endTime.timepicker().on('changeTime.timepicker blur', function() {
-    d_end = update_d_end();
-  });
-  
-  $startTrigger.on('click', function() {
-    $endRow.removeClass('hidden');
-    $startTrigger.addClass('hidden');
-  });
-  
-  $endTrigger.on('click', function() {
-    $endRow.addClass('hidden');
-    $startTrigger.removeClass('hidden');
-  });
-  
-  function initPickers() {
-    d_end = catch_up_d_end();
-    
+  function init() {
     $startDate.datepicker({
       autoclose: true,
       startDate: d_start
     });
+    
     $startTime.timepicker({
       template: false,
       showInputs: false,
@@ -375,6 +401,7 @@ UI.createEvent.when = function() {
       autoclose: true,
       startDate: d_end
     });
+    
     $endTime.timepicker({
       template: false,
       showInputs: false,
@@ -382,67 +409,148 @@ UI.createEvent.when = function() {
       showMeridian: false
     });
     
-    // set proper start date and time
-    // it is fecking weird, but if you just pass a standard date object to the plugin, 
-    // it doesn't highlighting the active date until user clicks it
-    $startDate.datepicker( 'setDate', (d_start.getMonth() + 1) + '-' + d_start.getDate() + '-' + d_start.getFullYear() );
-    $startTime.timepicker('setTime', d_start.getHours() + ':00');
-    
-    // set proper end date and time
-    $endDate.datepicker( 'setDate', (d_end.getMonth() + 1) + '-' + d_end.getDate() + '-' + d_end.getFullYear() );
-    $endTime.timepicker('setTime', d_end.getHours() + ':00');
-    
     // fixing weird issue with timepicker's input-group-addon
     $startTime.siblings('.input-group-addon').off('click');
     $endTime.siblings('.input-group-addon').off('click');
   }
   
-  function updateEndPickers() {
-    console.log( 'd_start - ' + d_start );
-    console.log( 'd_end - ' + d_end );
-    console.log( d_end - d_start );
+  function subscribe() {
+    $startTrigger.on('click', function() {
+      $endRow.removeClass('hidden');
+      $startTrigger.addClass('hidden');
+    });
     
-    $endDate.datepicker('setStartDate', d_start);
+    $endTrigger.on('click', function() {
+      $endRow.addClass('hidden');
+      $startTrigger.removeClass('hidden');
+    });
+
+    $startDate.on('changeDate', function() {
+      if (isUpdating) return;
+      
+      isUpdating = true;
+      
+      onStartChange();
+      
+      isUpdating = false;
+    });
     
-    $endDate.datepicker( 'setDate', (d_end.getMonth() + 1) + '-' + d_end.getDate() + '-' + d_end.getFullYear() );
-    $endTime.timepicker( 'setTime', d_end.getHours() + ':' + d_end.getMinutes() );
+    $startTime.timepicker().on('changeTime.timepicker blur', function() {
+      if (isUpdating) return;
+      
+      isUpdating = true;
+      
+      onStartChange();
+      
+      isUpdating = false;
+    });
+    
+    $endDate.on('changeDate', function() {
+      if (isUpdating) return;
+      
+      isUpdating = true;
+      
+      onEndChange();
+      
+      isUpdating = false;
+    });
+    
+    $endTime.timepicker().on('changeTime.timepicker blur', function() {
+      if (isUpdating) return;
+      
+      isUpdating = true;
+      
+      onEndChange();
+      
+      isUpdating = false;
+    });
   }
   
-  function update_d_start() {
-    var currentStartTime  = parseTime( $startTime.val() );
-    var d                 = $startDate.datepicker('getDate');
-    
-    return new Date( d.getFullYear(), d.getMonth(), d.getDate(), currentStartTime.hours, currentStartTime.minutes );
-  }
-  
-  function update_d_end() {
-    var currentStartTime  = parseTime( $endTime.val() );
-    var d                 = $endDate.datepicker('getDate');
-    
-    return new Date( d.getFullYear(), d.getMonth(), d.getDate(), currentStartTime.hours, currentStartTime.minutes );
-  }
-  
-  function catch_up_d_end() {
-    if ( d_end - d_start < 10800000 ) {
-      return new Date( d_start.getFullYear(), d_start.getMonth(), d_start.getDate(), d_start.getHours() + 3, d_start.getMinutes() );
-    } else {
-      return d_end;
+  // start, d
+  // end, d
+  function updateDate(type, d) {
+    if (type == 'start') {
+      d_start = new Date( d );
+      
+      $startDate.datepicker( 'setDate', (d_start.getMonth() + 1) + '-' + d_start.getDate() + '-' + d_start.getFullYear() );
+      $startTime.timepicker( 'setTime', d_start.getHours() + ':' + d_start.getMinutes() );
     }
+    
+    if (type == 'end') {
+      d_end = new Date( d );
+      
+      $endDate.datepicker( 'setDate', (d_end.getMonth() + 1) + '-' + d_end.getDate() + '-' + d_end.getFullYear() );
+      $endTime.timepicker( 'setTime', d_end.getHours() + ':' + d_end.getMinutes() );
+    }
+    
+    $endDate.datepicker( 'setStartDate', d_start );
   }
   
+  // start
+  // end
+  // returns d;
+  function getDateTime(type) {
+    var d;
+    var t;
+    
+    if (type == 'start') {
+      d = $startDate.datepicker('getDate');
+      t = parseTime( $startTime.val() );
+      
+      d.setHours( t.hours );
+      d.setMinutes( t.minutes );
+    }
+    
+    if (type == 'end') {
+      d = $endDate.datepicker('getDate');
+      t = parseTime( $endTime.val() );
+      
+      d.setHours( t.hours );
+      d.setMinutes( t.minutes );
+    }
+    
+    return d;
+  }
+  
+  // time
+  // returns {hours: 'HH', minutes: 'MM'}
   function parseTime(time) {
     var arr = time.split(':');
     
     return {
-      hours: arr[0] || undefined,
-      minutes: arr[1]  || undefined
+      hours: arr[0] || 0,
+      minutes: arr[1]  || 0
     }
+  }
+  
+  // returns true if (d_end < d_start + 1 hour)
+  function compareDates() {
+    if ( d_end - d_start < 3600000 ) {
+      return true;
+    }
+    
+    return false;
+  }
+  
+  function onStartChange() {
+    updateDate('start', getDateTime('start'));
+    
+    if ( compareDates() ) {
+      var d = d_start;
+      
+      d.setHours( d.getHours() + 1 );
+      updateDate( 'end', d );
+    }
+  }
+  
+  function onEndChange() {
+    updateDate('end', getDateTime('end'));
   }
 }
 
 UI.createEvent.guests = function() {
-  var $list  = $('.step-guestsList');
-  var $first = $('.step-guestsList .step-guestsList-guest:first-child');
+  var $list  = $('.guestsList');
+  var $first = $('.guestsList .guestsList-guest:first-child');
   
   // вешаю обработчик на ссылки в первой строке
   addListeners( $first );
@@ -450,8 +558,8 @@ UI.createEvent.guests = function() {
   // обработчик на + добавляет строку в конец списка, вешает на нее обработчики и запускает парсер проверяющий, какие ссылки, в какой строке нужно открыть
   // обработчик на - удаляет строку и запускает парсер проверяющий, какие ссылки, в какой строке нужно открыть
   function addListeners( $el ) {
-    $remove = $el.find('.step-guestsList-trigger_remove');
-    $add    = $el.find('.step-guestsList-trigger_add');
+    $remove = $el.find('.guestsList-trigger_remove');
+    $add    = $el.find('.guestsList-trigger_add');
     
     $remove.on('click', function(e) {
       e.preventDefault();
@@ -467,12 +575,12 @@ UI.createEvent.guests = function() {
   }
   
   function addElement() {
-    var $el       = $('<li class="step-guestsList-guest clearfix"></li>');
-    var template  = '<div class="form-group step-guestsList-guest-name">' +
+    var $el       = $('<li class="guestsList-guest clearfix"></li>');
+    var template  = '<div class="form-group guestsList-guest-name">' +
                       '<input type="text" class="form-control" placeholder="guest\'s name">' +
                     '</div>' +
-                    '<a href="#" class="step-guestsList-trigger step-guestsList-trigger_remove hidden">Remove</a>' +
-                    '<a href="#" class="step-guestsList-trigger step-guestsList-trigger_add hidden">+ Guest</a>';
+                    '<a href="#" class="guestsList-trigger guestsList-trigger_remove hidden">Remove</a>' +
+                    '<a href="#" class="guestsList-trigger guestsList-trigger_add hidden">+ Guest</a>';
     
     $list.append( $el.append(template) );
     
@@ -483,8 +591,8 @@ UI.createEvent.guests = function() {
     var q = $list.children('li').length;
     
     $list.children('li').each(function(n, el) {
-      $remove = $(el).find('.step-guestsList-trigger_remove');
-      $add    = $(el).find('.step-guestsList-trigger_add');
+      $remove = $(el).find('.guestsList-trigger_remove');
+      $add    = $(el).find('.guestsList-trigger_add');
       
       if (n < q - 1) {
         $add.addClass('hidden');
@@ -500,34 +608,54 @@ UI.createEvent.guests = function() {
   }
 }
 
-/*
- function() {
-  var $form = $('#createEvent');
-  var $geo = $('#createEvent-geo');
+UI.createEvent.where = function() {
+  var autocomplete  = new google.maps.places.Autocomplete( document.getElementById('createEvent-location'), {types: ['geocode']});
+  var geocoder      = new google.maps.Geocoder();
+  var $geoTrigger   = $('.geoLocation-icon');
+  var $geoInput     = $('#createEvent-location');
+  var $spinner      = $geoTrigger.siblings('.spinner');
   
+  if (navigator.geolocation) {
+    $geoTrigger.removeClass('hidden');
+    $geoTrigger.on('click', function() {
+      showSpinner();
+      navigator.geolocation.getCurrentPosition(onGetPositionSuccess, onGetPositionError);
+    })
+  };
   
-  // для валидации сложных парных полей, использовать флаги
-  // давая понять плагину либо например что нужно использовать особую логику
-  // или указывать плагину, где живет контейнер ошибок и особую логику для вывода сообщений (сумму валидации двух полей)
-  // 
-  
-  
-  
-
-
-
-  function geoLocation() {
-    var $input = $geo.find('input');
-    var $pin = $geo.find('.step-geoLocation-icon');
+  function onGetPositionSuccess(position) {
+    $.ajax({
+      url: 'https://maps.googleapis.com/maps/api/geocode/json?latlng=' 
+            + position.coords.latitude + ',' + position.coords.longitude 
+            + '&key=AIzaSyDjdMGfSpv44b2bVuKVW8AxBGmXTVHTRzA'
+    }).done(function(data) {
+      $geoInput.val( data.results[0].formatted_address || '' );
+    }).always(function() {
+      hideSpinner();
+    });
   }
   
-  geoLocation();
+  function onGetPositionError(error) {
+    hideSpinner();
+    console.log(error);
+  }
+  
+  function showSpinner() {
+    $spinner.removeClass('hidden');
+    $geoTrigger.addClass('hidden');
+  }
+  
+  function hideSpinner() {
+    $spinner.addClass('hidden');
+    $geoTrigger.removeClass('hidden');
+  }
 }
-*/
 
 
 $(document).ready(function () {
+  UI.core.init();
   UI.registration();
   UI.createEvent.when();
   UI.createEvent.guests();
+  UI.createEvent.where();
 });

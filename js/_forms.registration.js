@@ -26,12 +26,13 @@ UI.registration = function() {
     $email.validator('forceValidation');
     $pwd.validator('forceValidation');
     
+    e.preventDefault();
+    
     if ($form[0].checkValidity() === false) {
-      e.preventDefault();
-      console.log('invalid');
       return false;
     } else {
-      console.log('valid');
+      UI.core.applicationState = 'list';
+      UI.core.viewBuilder();
     }
   });
 }
