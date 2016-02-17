@@ -1,0 +1,88 @@
+.events {
+  
+}
+
+.event {
+  margin-bottom: 2em;
+  padding: 20px;
+  border: 1px solid @well-border;
+  
+  .event-title {
+    margin-top: .25em;
+    font-size: 20px;
+    font-weight: normal;
+    
+    .label {
+      position: relative;
+      top: -2px;
+      
+      margin-left: 1em;
+      
+      font-size: 11px;
+      font-weight: normal;
+    }
+  }
+  
+  .event-fieldset {
+    margin-bottom: .1em;
+    
+    .glyphicon {
+      margin-right: .35em;
+      .text-muted;
+    }
+  }
+  
+  .event-fieldset-field {
+    margin-right: .5em;
+  }
+  
+  .event-fieldset-label {
+    margin-right: .5em;
+    display: inline-block;
+    display: none;
+    width: 10em;
+    
+    
+    .text-muted;
+  }
+  
+  .event-when {
+    .event-fieldset-field {
+      display: inline-block;
+    }
+    
+    .event-when-startTime {
+      margin-right: 0;
+      
+      &:after {
+        padding-left: .5em;
+        padding-right: .5em;
+        content: '\2014';
+      }
+    }
+    
+    &.event-when_sameDate {
+      .event-when-endDate {
+        display: none;
+      }
+      
+      .event-when-endTime {
+        .glyphicon {
+          display: none;
+        }
+      }
+    }
+  }
+  
+  .event-where,
+  .event-guests {
+    .event-fieldset-field {
+      margin-right: 0;
+      display: inline-block;
+      
+      &:not(:last-child) .event-fieldset-value:after {
+        content: ',';
+      }
+    }
+  }
+}

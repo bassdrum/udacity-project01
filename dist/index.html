@@ -17,8 +17,108 @@
 </head>
 <body>
   <div class="container">
+    <div class="eventsList hidden">
+      <div class="page-header">
+        <div class="pull-right"><button class="btn btn-success">Create Event</button></div>
+        <h1>Your Events</h1>
+      </div>
+      <div class="events">
+        <div class="event">
+          <h2 class="event-title"><span class="event-name">I'm going to be 30</span><span class="label label-primary event-type">Birthday</span></h2>
+          <div class="event-fieldset event-when event-when_sameDate">
+            <div class="event-fieldset-field event-when-startDate">
+              <span class="event-fieldset-label">Date:</span>
+              <span class="event-fieldset-value"><span class="glyphicon glyphicon-calendar"></span>22 February 2016</span>
+            </div>
+            <div class="event-fieldset-field event-when-startTime">
+              <span class="event-fieldset-label">Time:</span>
+              <span class="event-fieldset-value"><span class="glyphicon glyphicon-time"></span>20:00</span>
+            </div>
+            <div class="event-fieldset-field event-when-endDate">
+              <span class="event-fieldset-label">Date:</span>
+              <span class="event-fieldset-value"><span class="glyphicon glyphicon-calendar"></span>22 February 2016</span>
+            </div>
+            <div class="event-fieldset-field event-when-endTime">
+              <span class="event-fieldset-label">Time:</span>
+              <span class="event-fieldset-value"><span class="glyphicon glyphicon-time"></span>21:00</span>
+            </div>
+          </div>
+          <div class="event-fieldset event-where">
+            <div class="event-fieldset-field event-where-host hidden">
+              <span class="event-fieldset-label">Host:</span>
+              <span class="event-fieldset-value"></span>
+            </div>
+            <div class="event-fieldset-field event-where-location">
+              <span class="event-fieldset-label">Location:</span>
+              <span class="event-fieldset-value">1107 Pittsfield Ln, Ventura, CA 93001, USA</span>
+            </div>
+          </div>
+          <div class="event-fieldset event-guests">
+            <div class="event-fieldset-field event-guests-guest">
+              <span class="event-fieldset-label">Guests:</span>
+              <span class="event-fieldset-value"><span class="glyphicon glyphicon-user"></span>Vasya</span>
+            </div>
+            <div class="event-fieldset-field event-guests-guest">
+              <span class="event-fieldset-label">Guests:</span>
+              <span class="event-fieldset-value"><span class="glyphicon glyphicon-user"></span>Petya</span>
+            </div>
+          </div>
+        </div>
+        <div class="event">
+          <h2 class="event-title"><span class="event-name">I'm going to be 30</span><span class="label label-primary event-type">Birthday</span></h2>
+          <div class="event-fieldset event-when">
+            <div class="event-fieldset-field event-when-startDate">
+              <span class="event-fieldset-label">Date:</span>
+              <span class="event-fieldset-value"><span class="glyphicon glyphicon-calendar"></span>22 February 2016</span>
+            </div>
+            <div class="event-fieldset-field event-when-startTime">
+              <span class="event-fieldset-label">Time:</span>
+              <span class="event-fieldset-value"><span class="glyphicon glyphicon-time"></span>20:00</span>
+            </div>
+            <div class="event-fieldset-field event-when-endDate">
+              <span class="event-fieldset-label">Date:</span>
+              <span class="event-fieldset-value"><span class="glyphicon glyphicon-calendar"></span>23 February 2016</span>
+            </div>
+            <div class="event-fieldset-field event-when-endTime">
+              <span class="event-fieldset-label">Time:</span>
+              <span class="event-fieldset-value"><span class="glyphicon glyphicon-time"></span>20:00</span>
+            </div>
+          </div>
+          <div class="event-fieldset event-where">
+            <div class="event-fieldset-field event-where-host">
+              <span class="event-fieldset-label">Host:</span>
+              <span class="event-fieldset-value">Bla bla</span>
+            </div>
+            <div class="event-fieldset-field event-where-location">
+              <span class="event-fieldset-label">Location:</span>
+              <span class="event-fieldset-value">1107 Pittsfield Ln, Ventura, CA 93001, USA</span>
+            </div>
+          </div>
+          <div class="event-fieldset event-guests">
+            <div class="event-fieldset-field event-guests-guest">
+              <span class="event-fieldset-label">Guests:</span>
+              <span class="event-fieldset-value"><span class="glyphicon glyphicon-user"></span>Vasya</span>
+            </div>
+            <div class="event-fieldset-field event-guests-guest">
+              <span class="event-fieldset-label">Guests:</span>
+              <span class="event-fieldset-value"><span class="glyphicon glyphicon-user"></span>Petya</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="emptyState hidden">
+        <i class="glyphicon glyphicon-inbox text-muted"></i>
+        <h2>Well, this is empty</h2>
+        <p>Now let's create an event</p>
+        <button class="btn btn-default btn-success">Create Event</button>
+      </div>
+      
+    </div>
     <div class="form registration hidden">
-      <h1 class="col-sm-offset-2">Introduce yourself</h1>
+      <div class="page-header">
+        <h1 class="col-sm-offset-2">Introduce yourself</h1>
+      </div>
       <form novalidate id="registration" class="form-horizontal">
         <fieldset>
           <div class="form-group">
@@ -53,7 +153,9 @@
       </form>
     </div>
     <div class="form createEvent hidden">
-      <h1 class="col-sm-offset-2">Create Event</h1>
+      <div class="page-header">
+        <h1 class="col-sm-offset-2">Create Event</h1>
+      </div>
       <form novalidate id="createEvent" class="form-horizontal">
         <fieldset>
           <div class="form-group">
@@ -113,7 +215,8 @@
                 </div>
               </div>
               <a href="#" class="dateTime-add" id="createEvent-end-trigger">Remove</a>
-              <span class="help-block hidden"></span>
+              <div class="clearfix"></div>
+              <span class="help-block hidden">Event's end time must be greater than its start time</span>
             </div>
           </div>
         </fieldset>
@@ -143,7 +246,6 @@
           <div class="form-group">
             <label for="createEvent-guest01-name" class="col-sm-2 control-label">Guests</label>
             <div class="col-sm-10">
-            
               <ul class="guestsList">
                 <!-- guest -->
                 <li class="guestsList-guest clearfix">
@@ -176,8 +278,6 @@
         </div>
       </form>
     </div>
-    
-    <div class="eventsList hidden">Events</div>
   </div>
   
   <div class="dim hidden"></div>

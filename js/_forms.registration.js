@@ -31,7 +31,7 @@ UI.registration = function() {
     if ($form[0].checkValidity() === false) {
       return false;
     } else {
-      UI.core.applicationState = 'list';
+      UI.core.model.applicationState = 'list';
       UI.core.viewBuilder();
     }
   });

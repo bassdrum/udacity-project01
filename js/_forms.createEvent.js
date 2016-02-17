@@ -1,5 +1,17 @@
 UI.createEvent = {};
 
+UI.createEvent.model = {
+  d_start: true,
+  d_end: true
+}
+
+UI.createEvent.init = function() {
+  UI.createEvent.when();
+  UI.createEvent.guests();
+  UI.createEvent.where();
+  UI.createEvent.validation();
+}
+
 UI.createEvent.when = function() {
   var $startRow       = $('#createEvent-start');
   var $startTrigger   = $('#createEvent-start-trigger');
@@ -11,23 +23,23 @@ UI.createEvent.when = function() {
   var $endDate        = $('#createEvent-end-date-group');
   var $endTime        = $('#createEvent-end-time');
 
-  var now             = new Date();
-  var d_start         = new Date( now.getFullYear(), now.getMonth(), now.getDate(), now.getHours() + 1 );
-  var d_end           = new Date( now.getFullYear(), now.getMonth(), now.getDate(), now.getHours() + 2 );
-  
   var isUpdating      = false;
+  var now             = new Date();
+  
+  UI.createEvent.model.d_start  = new Date( now.getFullYear(), now.getMonth(), now.getDate(), now.getHours() + 1 );
+  UI.createEvent.model.d_end    = new Date( now.getFullYear(), now.getMonth(), now.getDate(), now.getHours() + 2 );
   
   init();
   
-  updateDate('start', d_start);
-  updateDate('end', d_end);
+  updateDate('start', UI.createEvent.model.d_start);
+  updateDate('end',   UI.createEvent.model.d_end);
   
   subscribe();
   
   function init() {
     $startDate.datepicker({
       autoclose: true,
-      startDate: d_start
+      startDate: UI.createEvent.model.d_start
     });
     
     $startTime.timepicker({
@@ -39,7 +51,7 @@ UI.createEvent.when = function() {
     
     $endDate.datepicker({
       autoclose: true,
-      startDate: d_end
+      startDate: UI.createEvent.model.d_end
     });
     
     $endTime.timepicker({
@@ -51,7 +63,7 @@ UI.createEvent.when = function() {
     
     // fixing weird issue with timepicker's input-group-addon
     $startTime.siblings('.input-group-addon').off('click');
-    $endTime.siblings('.input-group-addon').off('click');
+    $endTime  .siblings('.input-group-addon').off('click');
   }
   
   function subscribe() {
@@ -110,20 +122,20 @@ UI.createEvent.when = function() {
   // end, d
   function updateDate(type, d) {
     if (type == 'start') {
-      d_start = new Date( d );
+      UI.createEvent.model.d_start = new Date( d );
       
-      $startDate.datepicker( 'setDate', (d_start.getMonth() + 1) + '-' + d_start.getDate() + '-' + d_start.getFullYear() );
-      $startTime.timepicker( 'setTime', d_start.getHours() + ':' + d_start.getMinutes() );
+      $startDate.datepicker( 'setDate', (UI.createEvent.model.d_start.getMonth() + 1) + '-' + UI.createEvent.model.d_start.getDate() + '-' + UI.createEvent.model.d_start.getFullYear() );
+      $startTime.timepicker( 'setTime', UI.createEvent.model.d_start.getHours() + ':' + UI.createEvent.model.d_start.getMinutes() );
     }
     
     if (type == 'end') {
-      d_end = new Date( d );
+      UI.createEvent.model.d_end = new Date( d );
       
-      $endDate.datepicker( 'setDate', (d_end.getMonth() + 1) + '-' + d_end.getDate() + '-' + d_end.getFullYear() );
-      $endTime.timepicker( 'setTime', d_end.getHours() + ':' + d_end.getMinutes() );
+      $endDate.datepicker( 'setDate', (UI.createEvent.model.d_end.getMonth() + 1) + '-' + UI.createEvent.model.d_end.getDate() + '-' + UI.createEvent.model.d_end.getFullYear() );
+      $endTime.timepicker( 'setTime', UI.createEvent.model.d_end.getHours() + ':' + UI.createEvent.model.d_end.getMinutes() );
     }
     
-    $endDate.datepicker( 'setStartDate', d_start );
+    $endDate.datepicker( 'setStartDate', UI.createEvent.model.d_start );
   }
   
   // start
@@ -163,9 +175,9 @@ UI.createEvent.when = function() {
     }
   }
   
-  // returns true if (d_end < d_start + 1 hour)
+  // returns true if (UI.createEvent.model.d_end < UI.createEvent.model.d_start + 1 hour)
   function compareDates() {
-    if ( d_end - d_start < 3600000 ) {
+    if ( UI.createEvent.model.d_end - UI.createEvent.model.d_start < 3600000 ) {
       return true;
     }
     
@@ -176,7 +188,7 @@ UI.createEvent.when = function() {
     updateDate('start', getDateTime('start'));
     
     if ( compareDates() ) {
-      var d = d_start;
+      var d = UI.createEvent.model.d_start;
       
       d.setHours( d.getHours() + 1 );
       updateDate( 'end', d );
@@ -269,6 +281,7 @@ UI.createEvent.where = function() {
             + position.coords.latitude + ',' + position.coords.longitude 
             + '&key=AIzaSyDjdMGfSpv44b2bVuKVW8AxBGmXTVHTRzA'
     }).done(function(data) {
+      console.log(data);
       $geoInput.val( data.results[0].formatted_address || '' );
     }).always(function() {
       hideSpinner();
@@ -289,4 +302,43 @@ UI.createEvent.where = function() {
     $spinner.addClass('hidden');
     $geoTrigger.removeClass('hidden');
   }
+}
+
+UI.createEvent.validation = function() {
+  var $form     = $('#createEvent');
+  var $name     = $('#createEvent-name');
+  var $end      = $('#createEvent-end');
+  var $endDate  = $('#createEvent-end-date');
+  var $endTime  = $('#createEvent-end-date');
+  var $help     = $end.find('.help-block');
+  
+  
+  $name.validator();
+  
+  $form.on('submit', function(e) {
+    e.preventDefault();
+    
+    // call force validation
+    $name.validator('forceValidation');
+    
+    // validate end time
+    if (UI.createEvent.model.d_end - UI.createEvent.model.d_start <= 0) {
+      $end.addClass('has-error');
+      $help.removeClass('hidden');
+      $endDate[0].setCustomValidity('invalid');
+      $endTime[0].setCustomValidity('invalid');
+    } else {
+      $end.removeClass('has-error');
+      $help.addClass('hidden');
+      $endDate[0].setCustomValidity('');
+      $endTime[0].setCustomValidity('');
+    }
+
+    if ($form[0].checkValidity() === false) {
+      return false;
+    } else {
+      UI.core.applicationState = 'list';
+      UI.core.viewBuilder();
+    }
+  });
 }

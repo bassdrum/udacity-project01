@@ -1,0 +1,46 @@
+@titleMarginTop: .65em;
+@padding: 0;
+@paddingTdTop: 10px;
+@paddingTdLeft: 7px;
+@iconSize: 65px;
+@btnMarginTop: 20px;
+
+
+.emptyState {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  
+  transform: translate(-50%, -50%);
+  
+  
+  
+  padding: @padding;
+  text-align: center;
+  caption-side: bottom;
+
+  h2 {
+    margin-top: @titleMarginTop;
+    margin-bottom: .2em;
+  }
+  
+  > .glyphicon {
+    font-size: @iconSize;
+    line-height: 1em;
+  }
+  
+  p + .btn,
+  p + .btn-group {
+    margin-top: @btnMarginTop;
+    text-align: left;
+  }
+  
+  &_nothingFound {
+    //padding: @padding - 50px;
+  }
+    
+  &.table-cell {
+    padding-top: @padding - 25;
+    padding-bottom: @padding + 25;
+  }
+}
