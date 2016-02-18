@@ -270,7 +270,7 @@ var UI = {};
 UI.core = {};
 
 UI.core.model = {
-  applicationState: 'createEvent'
+  applicationState: 'registration'
 };
 
 UI.core.init = function() {
@@ -594,7 +594,7 @@ UI.createEvent.when.init = function() {
   var $endTrigger     = $('#createEvent-end-trigger');
   var $endDate        = $('#createEvent-end-date-group');
   var $endTime        = $('#createEvent-end-time');
-
+  
   UI.createEvent.when.setDates();
   
   init();
@@ -917,13 +917,13 @@ UI.createEvent.form.init = function() {
   var $name     = $('#createEvent-name');
   var $end      = $('#createEvent-end');
   var $endDate  = $('#createEvent-end-date');
-  var $endTime  = $('#createEvent-end-date');
+  var $endTime  = $('#createEvent-end-time');
   var $help     = $end.find('.help-block');
   var $cancel   = $('#createEvent-cancel');
   
   $name.validator();
   
-  $form.on('keyup keypress', ':input:not(textarea):not([type=submit])', function(e) {
+  $form.on('keyup keypress', ':input:not(textarea):not([type=submit]):not([type=button])', function(e) {
     var keyCode = e.keyCode;
     if (keyCode === 13) { 
       e.preventDefault();
@@ -939,15 +939,21 @@ UI.createEvent.form.init = function() {
     
     // validate end time
     if (UI.createEvent.when.model.d_end - UI.createEvent.when.model.d_start <= 0) {
-      $end.addClass('has-error');
-      $help.removeClass('hidden');
-      $endDate[0].setCustomValidity('invalid');
-      $endTime[0].setCustomValidity('invalid');
+      makeEndInvalid();
+      
+      $endTime.timepicker().on('changeTime.timepicker', function() {
+        if (UI.createEvent.when.model.d_end - UI.createEvent.when.model.d_start > 0) {
+          makeEndValid()
+        }
+      });
+      
+      $endTime.timepicker().on('changeTime.timepicker', function() {
+        if (UI.createEvent.when.model.d_end - UI.createEvent.when.model.d_start > 0) {
+          makeEndValid()
+        }
+      });
     } else {
-      $end.removeClass('has-error');
-      $help.addClass('hidden');
-      $endDate[0].setCustomValidity('');
-      $endTime[0].setCustomValidity('');
+      makeEndValid()
     }
 
     if ($form[0].checkValidity() === false) {
@@ -966,6 +972,20 @@ UI.createEvent.form.init = function() {
     UI.core.model.applicationState = 'list';
     UI.core.viewBuilder();
   })
+  
+  function makeEndValid() {
+    $end.removeClass('has-error');
+    $help.addClass('hidden');
+    $endDate[0].setCustomValidity('');
+    $endTime[0].setCustomValidity('');
+  }
+  
+  function makeEndInvalid() {
+    $end.addClass('has-error');
+      $help.removeClass('hidden');
+      $endDate[0].setCustomValidity('invalid');
+      $endTime[0].setCustomValidity('invalid');
+  }
 }
 
 UI.createEvent.form.collectEvent = function() {
@@ -1013,6 +1033,19 @@ UI.createEvent.form.clean = function() {
   UI.createEvent.when.clean();
   UI.createEvent.guests.clean();
 }
+
+/*
+UI.createEvent.form.manageFocus = function() {
+  var $startTrigger   = $('#createEvent-start-trigger');
+  var $endTrigger     = $('#createEvent-end-trigger');
+  var $endDateInput   = $('#createEvent-end-date');
+  var $host           = $('#createEvent-host')
+  
+  $startTrigger.on('click', function(e) {
+    $endDateInput[0].focus();
+  }
+}
+*/
 
 
 $(document).ready(function () {

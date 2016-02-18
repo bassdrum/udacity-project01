@@ -1,7 +1,7 @@
 UI.core = {};
 
 UI.core.model = {
-  applicationState: 'createEvent'
+  applicationState: 'registration'
 };
 
 UI.core.init = function() {

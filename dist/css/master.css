@@ -6813,6 +6813,9 @@ label.required:after {
 .form .geoLocation .geoLocation-wrapper {
   position: relative;
 }
+.form .geoLocation input {
+  padding-right: 30px;
+}
 .form .geoLocation .geoLocation-icon {
   position: absolute;
   right: 7px;
