@@ -5,7 +5,7 @@ UI.createEvent.init = function() {
   UI.createEvent.guests.init();
   UI.createEvent.where();
   UI.createEvent.form.init();
-}
+};
 
 UI.createEvent.when = {};
 
@@ -18,10 +18,9 @@ UI.createEvent.when.model = {
                   'July', 'August', 'September', 'October', 'November', 'December'
                   ],
   isUpdating    : false
-}
+};
 
 UI.createEvent.when.init = function() {
-  var $startRow       = $('#createEvent-start');
   var $startTrigger   = $('#createEvent-start-trigger');
   var $startDate      = $('#createEvent-start-date-group');
   var $startTime      = $('#createEvent-start-time');
@@ -86,43 +85,43 @@ UI.createEvent.when.init = function() {
     });
 
     $startDate.on('changeDate', function() {
-      if (isUpdating) return;
+      if (UI.createEvent.when.model.isUpdating) return;
       
-      isUpdating = true;
+      UI.createEvent.when.model.isUpdating = true;
       
       onStartChange();
       
-      isUpdating = false;
+      UI.createEvent.when.model.isUpdating = false;
     });
     
     $startTime.timepicker().on('changeTime.timepicker blur', function() {
-      if (isUpdating) return;
+      if (UI.createEvent.when.model.isUpdating) return;
       
-      isUpdating = true;
+      UI.createEvent.when.model.isUpdating = true;
       
       onStartChange();
       
-      isUpdating = false;
+      UI.createEvent.when.model.isUpdating = false;
     });
     
     $endDate.on('changeDate', function() {
-      if (isUpdating) return;
+      if (UI.createEvent.when.model.isUpdating) return;
       
-      isUpdating = true;
+      UI.createEvent.when.model.isUpdating = true;
       
       onEndChange();
       
-      isUpdating = false;
+      UI.createEvent.when.model.isUpdating = false;
     });
     
     $endTime.timepicker().on('changeTime.timepicker blur', function() {
-      if (isUpdating) return;
+      if (UI.createEvent.when.model.isUpdating) return;
       
-      isUpdating = true;
+      UI.createEvent.when.model.isUpdating = true;
       
       onEndChange();
       
-      isUpdating = false;
+      UI.createEvent.when.model.isUpdating = false;
     });
   }
   
@@ -186,14 +185,14 @@ UI.createEvent.when.init = function() {
   function onEndChange() {
     UI.createEvent.when.updateDates('end', getDateTime('end'));
   }
-}
+};
 
 UI.createEvent.when.setDates = function() {
   var now                       = new Date();
   
   UI.createEvent.when.model.d_start  = new Date( now.getFullYear(), now.getMonth(), now.getDate(), now.getHours() + 1 );
   UI.createEvent.when.model.d_end    = new Date( now.getFullYear(), now.getMonth(), now.getDate(), now.getHours() + 2 );
-}
+};
 
 UI.createEvent.when.updateDates = function(type, d) {
   var $startDate      = $('#createEvent-start-date-group');
@@ -204,23 +203,23 @@ UI.createEvent.when.updateDates = function(type, d) {
   if (type == 'start') {
     UI.createEvent.when.model.d_start = new Date( d );
     
-    isUpdating = true;
+    UI.createEvent.when.model.isUpdating = true;
     $startDate.datepicker( 'setDate', (UI.createEvent.when.model.d_start.getMonth() + 1) + '-' + UI.createEvent.when.model.d_start.getDate() + '-' + UI.createEvent.when.model.d_start.getFullYear() );
     $startTime.timepicker( 'setTime', UI.createEvent.when.model.d_start.getHours() + ':' + UI.createEvent.when.model.d_start.getMinutes() );
-    isUpdating = false;
+    UI.createEvent.when.model.isUpdating = false;
   }
   
   if (type == 'end') {
     UI.createEvent.when.model.d_end = new Date( d );
     
-    isUpdating = true;
+    UI.createEvent.when.model.isUpdating = true;
     $endDate.datepicker( 'setDate', (UI.createEvent.when.model.d_end.getMonth() + 1) + '-' + UI.createEvent.when.model.d_end.getDate() + '-' + UI.createEvent.when.model.d_end.getFullYear() );
     $endTime.timepicker( 'setTime', UI.createEvent.when.model.d_end.getHours() + ':' + UI.createEvent.when.model.d_end.getMinutes() );
-    isUpdating = false;
+    UI.createEvent.when.model.isUpdating = false;
   }
   
   $endDate.datepicker( 'setStartDate', UI.createEvent.when.model.d_start );
-}
+};
 
 UI.createEvent.when.clean = function() {
   UI.createEvent.when.setDates();
@@ -228,14 +227,14 @@ UI.createEvent.when.clean = function() {
   UI.createEvent.when.updateDates('end', UI.createEvent.when.model.d_end);
   $('#createEvent-end').addClass('hidden');
   $('#createEvent-start-trigger').removeClass('hidden');
-}
+};
 
 UI.createEvent.guests = {};
 
 UI.createEvent.guests.dom = {
   $list: $('.guestsList'),
   $first: $('.guestsList .guestsList-guest:first-child')
-}
+};
 
 UI.createEvent.guests.init = function() {
   var $list  = UI.createEvent.guests.dom.$list;
@@ -245,8 +244,8 @@ UI.createEvent.guests.init = function() {
   UI.createEvent.guests.manageLinksVisibility();
   
   function addListeners( $el ) {
-    $remove = $el.find('.guestsList-trigger_remove');
-    $add    = $el.find('.guestsList-trigger_add');
+    var $remove = $el.find('.guestsList-trigger_remove');
+    var $add    = $el.find('.guestsList-trigger_add');
     
     $remove.on('click', function(e) {
       e.preventDefault();
@@ -273,15 +272,15 @@ UI.createEvent.guests.init = function() {
     
     return $el;
   }
-}
+};
 
 UI.createEvent.guests.manageLinksVisibility = function() {
   var $list  = UI.createEvent.guests.dom.$list;
   var q      = $list.children('li').length;
   
   $list.children('li').each(function(n, el) {
-    $remove = $(el).find('.guestsList-trigger_remove');
-    $add    = $(el).find('.guestsList-trigger_add');
+    var $remove = $(el).find('.guestsList-trigger_remove');
+    var $add    = $(el).find('.guestsList-trigger_add');
     
     if (n < q - 1) {
       $add.addClass('hidden');
@@ -294,18 +293,18 @@ UI.createEvent.guests.manageLinksVisibility = function() {
       $remove.addClass('hidden');
     }
   });
-}
+};
 
 UI.createEvent.guests.clean = function() {
   var $list  = UI.createEvent.guests.dom.$list;
   
   $list.find('li').not(':first-child').remove();
   UI.createEvent.guests.manageLinksVisibility();
-}
+};
 
 UI.createEvent.where = function() {
   var autocomplete  = new google.maps.places.Autocomplete( document.getElementById('createEvent-location'), {types: ['geocode']});
-  var geocoder      = new google.maps.Geocoder();
+  //var geocoder      = new google.maps.Geocoder();
   var $geoTrigger   = $('.geoLocation-icon');
   var $geoInput     = $('#createEvent-location');
   var $spinner      = $geoTrigger.siblings('.spinner');
@@ -315,8 +314,8 @@ UI.createEvent.where = function() {
     $geoTrigger.on('click', function() {
       showSpinner();
       navigator.geolocation.getCurrentPosition(onGetPositionSuccess, onGetPositionError);
-    })
-  };
+    });
+  }
   
   function onGetPositionSuccess(position) {
     $.ajax({
@@ -344,7 +343,7 @@ UI.createEvent.where = function() {
     $spinner.addClass('hidden');
     $geoTrigger.removeClass('hidden');
   }
-}
+};
 
 UI.createEvent.form = {};
 
@@ -422,7 +421,7 @@ UI.createEvent.form.init = function() {
       $endDate[0].setCustomValidity('invalid');
       $endTime[0].setCustomValidity('invalid');
   }
-}
+};
 
 UI.createEvent.form.collectEvent = function() {
   var event = {};
@@ -459,16 +458,16 @@ UI.createEvent.form.collectEvent = function() {
     });
     
     return arr;
-  };
+  }
   
   return event;
-}
+};
 
 UI.createEvent.form.clean = function() {
   $('#createEvent')[0].reset();
   UI.createEvent.when.clean();
   UI.createEvent.guests.clean();
-}
+};
 
 /*
 UI.createEvent.form.manageFocus = function() {

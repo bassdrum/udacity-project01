@@ -221,7 +221,7 @@
           .addClass('glyphicon-ban-circle');
       }
     }
-  }
+  };
   
   // API methods
   Module.prototype.forceValidation = function() {
@@ -236,7 +236,7 @@
     }
     
     return false;
-  }
+  };
   // end of API methods
   
   $.fn[moduleName] = function (option) {

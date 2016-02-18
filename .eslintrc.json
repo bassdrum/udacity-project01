@@ -19,6 +19,9 @@
     "no-console": 1,
     "no-unused-vars": 1
   },
+  "globals": {
+    "google": true
+  },
   "env": {
     "browser": true,
     "jquery": true

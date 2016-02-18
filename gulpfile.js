@@ -28,13 +28,13 @@ gulp.task('styles', function(){
 
 gulp.task('scripts', function(){
   gulp.src('./js/master.js')
-    //.pipe(sourcemaps.init())
+    .pipe(sourcemaps.init())
     .pipe( include() )
-    //.pipe(eslint())
-    //.pipe(eslint.format())
-    //.pipe(eslint.failAfterError())
-    //.pipe(uglify())
-    //.pipe(sourcemaps.write('maps'))
+    .pipe(eslint())
+    .pipe(eslint.format())
+    .pipe(eslint.failAfterError())
+    .pipe(uglify())
+    .pipe(sourcemaps.write('maps'))
     .pipe(gulp.dest('./dist/js/'))
     .pipe(reload({stream: true}));
 });

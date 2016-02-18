@@ -35,4 +35,4 @@ UI.registration = function() {
       UI.core.viewBuilder();
     }
   });
-}
+};
