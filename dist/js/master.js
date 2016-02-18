@@ -285,12 +285,14 @@ UI.core.viewBuilder = function() {
   var $spinner      = $('.spinner_global');
   var $body         = $('body');
   
+  UI.events.process();
+  
   // login state
   if (UI.core.model.applicationState == 'registration') {
+    hideAll();
     showSpinner();
     
     setTimeout(function(){
-      hideAll();
       hideSpinner();
       $registration.removeClass('hidden');
     }, 1000);
@@ -298,10 +300,10 @@ UI.core.viewBuilder = function() {
   
   // events list state
   if (UI.core.model.applicationState == 'createEvent') {
+    hideAll();
     showSpinner();
     
     setTimeout(function(){
-      hideAll();
       hideSpinner();
       $createEvent.removeClass('hidden');
     }, 1000);
@@ -309,10 +311,10 @@ UI.core.viewBuilder = function() {
   
   // events list state
   if (UI.core.model.applicationState == 'list') {
+    hideAll();
     showSpinner();
     
     setTimeout(function(){
-      hideAll();
       hideSpinner();
       $list.removeClass('hidden');
     }, 1000);
@@ -343,18 +345,185 @@ UI.events.model = {
 };
 
 UI.events.init = function() {
-  
+  var $btns = $('.eventsList .btn-success');
+  $btns.each(function() {
+    $(this).on('click', function() {
+      UI.core.model.applicationState = 'createEvent';
+      UI.core.viewBuilder();
+    });
+  });
 };
 
+UI.events.process = function() {
+  var $header   = $('.eventsList > .page-header');
+  var $events   = $('.eventsList > .events');
+  var $empty    = $('.eventsList > .emptyState');
+  
+  $events.html('');
+  
+  if (UI.events.model.events.length) {
+    UI.events.model.events.forEach(function(event) {
+      // event title
+      var name = event.name ? '<span class="event-name">' + event.name + '</span>' : '';
+      var type = event.type ? '<span class="label label-primary event-type">' + event.type + '</span>' : '';
+      var title = '<h2 class="event-title">' + name + type + '</h2>'
+      
+      // event when
+      var sameDate = '';
+      var noEndDate = '';
+      
+      if (event.startYear == new Date().getFullYear()) {event.startYear = ''};
+      if (event.endYear   == new Date().getFullYear()) {event.endYear = ''};
+      if (event.startDate == event.endDate) {sameDate = 'event-when_sameDate'};
+      if (!event.endDate) {noEndDate = 'event-when_onlyStart'};
+      
+      var startDate = '<div class="event-fieldset-field event-when-startDate">' +
+                        '<span class="event-fieldset-label">Date:</span>' +
+                        '<span class="event-fieldset-value"><span class="glyphicon glyphicon-calendar"></span>' + 
+                          event.startDate + ' ' + 
+                          event.startMonth + ' ' + 
+                          event.startYear +
+                        '</span>' +
+                      '</div>';
+      
+      var startTime = '<div class="event-fieldset-field event-when-startTime">' +
+                        '<span class="event-fieldset-label">Time:</span>' +
+                        '<span class="event-fieldset-value"><span class="glyphicon glyphicon-time"></span>' + 
+                          event.startTime + 
+                        '</span>' +
+                      '</div>';
+      
+      var endDate   = event.endDate ? 
+                      '<div class="event-fieldset-field event-when-endDate">' +
+                        '<span class="event-fieldset-label">Date:</span>' +
+                        '<span class="event-fieldset-value"><span class="glyphicon glyphicon-calendar"></span>' + 
+                          event.endDate + ' ' + 
+                          event.endMonth + ' ' + 
+                          event.endYear +
+                        '</span>' +
+                      '</div>' : '';
 
+      var endTime   = event.endTime ? 
+                      '<div class="event-fieldset-field event-when-endTime">' +
+                        '<span class="event-fieldset-label">Time:</span>' +
+                        '<span class="event-fieldset-value"><span class="glyphicon glyphicon-time"></span>' + 
+                          event.endTime + 
+                        '</span>' +
+                      '</div>' : '';
+      
+      var when      = '<div class="event-fieldset event-when ' + sameDate + ' ' + noEndDate + '">' +
+                        startDate +
+                        startTime +
+                        endDate + 
+                        endTime +
+                      '</div>';
+      
+      // event where
+      var host      = event.host ? 
+                      '<div class="event-fieldset-field event-where-host">' +
+                        '<span class="event-fieldset-label">Host:</span>' +
+                        '<span class="event-fieldset-value">' + event.host + '</span>' +
+                      '</div>' : '';
+      
+      var location  = event.location ? 
+                      '<div class="event-fieldset-field event-where-location">' +
+                        '<span class="event-fieldset-label">Location:</span>' +
+                        '<span class="event-fieldset-value">' + event.location + '</span>' +
+                      '</div>' : '';
+      
+      var where     = host || location ? '<div class="event-fieldset event-where">' + host + location + '</div>' : '';
+      
+      // event guests
+      var guests = '';
+      
+      if (event.guests.length) {
+        event.guests.forEach(function(guest) {
+          guests += '<div class="event-fieldset-field event-guests-guest">' +
+                      '<span class="event-fieldset-label">Guests:</span>' +
+                      '<span class="event-fieldset-value"><span class="glyphicon glyphicon-user"></span>' + guest + '</span>' +
+                    '</div>';
+        });
+        
+        guests = '<div class="event-fieldset event-guests">' + guests + '</div>';
+      };
+      
+      $events.append( '<div class="event">' + title + when + where + guests + '</div>');
+    });
+    
+    $header.removeClass('hidden');
+    $events.removeClass('hidden');
+    $empty.addClass('hidden');
+  } else {
+    $header.addClass('hidden');
+    $events.addClass('hidden');
+    $empty.removeClass('hidden');
+  }
+  
+  console.log(UI.events.model.events)
+};
 
-UI.events.prepareStorage = function() {
-  localStorage.clear();
-}
+/*
+name: "1"
+type: "2"
 
-UI.events.addEvent = function(event) {
-  localStorage.setItem(event.name, event);
-}
+startDate: "17 February 2016"
+startMonth:
+startYear:
+startTime: "19:00"
+
+endDate: "17 February 2016"
+endTime: "20:00"
+
+host: "2"
+location: "2555 East Harbor Boulevard, Ventura, CA, United States"
+
+guests: Array[2]
+
+message: "123"
+*/
+/*
+<div class="event">
+  <h2 class="event-title"><span class="event-name">I'm going to be 30</span><span class="label label-primary event-type">Birthday</span></h2>
+  <div class="event-fieldset event-when event-when_sameDate">
+    <div class="event-fieldset-field event-when-startDate">
+      <span class="event-fieldset-label">Date:</span>
+      <span class="event-fieldset-value"><span class="glyphicon glyphicon-calendar"></span>22 February 2016</span>
+    </div>
+    <div class="event-fieldset-field event-when-startTime">
+      <span class="event-fieldset-label">Time:</span>
+      <span class="event-fieldset-value"><span class="glyphicon glyphicon-time"></span>20:00</span>
+    </div>
+    <div class="event-fieldset-field event-when-endDate">
+      <span class="event-fieldset-label">Date:</span>
+      <span class="event-fieldset-value"><span class="glyphicon glyphicon-calendar"></span>22 February 2016</span>
+    </div>
+    <div class="event-fieldset-field event-when-endTime">
+      <span class="event-fieldset-label">Time:</span>
+      <span class="event-fieldset-value"><span class="glyphicon glyphicon-time"></span>21:00</span>
+    </div>
+  </div>
+  <div class="event-fieldset event-where">
+    <div class="event-fieldset-field event-where-host hidden">
+      <span class="event-fieldset-label">Host:</span>
+      <span class="event-fieldset-value"></span>
+    </div>
+    <div class="event-fieldset-field event-where-location">
+      <span class="event-fieldset-label">Location:</span>
+      <span class="event-fieldset-value">1107 Pittsfield Ln, Ventura, CA 93001, USA</span>
+    </div>
+  </div>
+  <div class="event-fieldset event-guests">
+    <div class="event-fieldset-field event-guests-guest">
+      <span class="event-fieldset-label">Guests:</span>
+      <span class="event-fieldset-value"><span class="glyphicon glyphicon-user"></span>Vasya</span>
+    </div>
+    <div class="event-fieldset-field event-guests-guest">
+      <span class="event-fieldset-label">Guests:</span>
+      <span class="event-fieldset-value"><span class="glyphicon glyphicon-user"></span>Petya</span>
+    </div>
+  </div>
+</div>
+*/
 UI.registration = function() {
   var $form = $('#registration');
   var $name = $('#registration-name');
@@ -395,19 +564,27 @@ UI.registration = function() {
 }
 UI.createEvent = {};
 
-UI.createEvent.model = {
-  d_start: true,
-  d_end: true
-}
-
 UI.createEvent.init = function() {
-  UI.createEvent.when();
-  UI.createEvent.guests();
+  UI.createEvent.when.init();
+  UI.createEvent.guests.init();
   UI.createEvent.where();
-  UI.createEvent.validation();
+  UI.createEvent.form.init();
 }
 
-UI.createEvent.when = function() {
+UI.createEvent.when = {};
+
+UI.createEvent.when.model = {
+  d_start       : true,
+  d_end         : true,
+  d_endVisible  : false,
+  monthNames    : [
+                  'January', 'February', 'March', 'April', 'May', 'June',
+                  'July', 'August', 'September', 'October', 'November', 'December'
+                  ],
+  isUpdating    : false
+}
+
+UI.createEvent.when.init = function() {
   var $startRow       = $('#createEvent-start');
   var $startTrigger   = $('#createEvent-start-trigger');
   var $startDate      = $('#createEvent-start-date-group');
@@ -418,23 +595,19 @@ UI.createEvent.when = function() {
   var $endDate        = $('#createEvent-end-date-group');
   var $endTime        = $('#createEvent-end-time');
 
-  var isUpdating      = false;
-  var now             = new Date();
-  
-  UI.createEvent.model.d_start  = new Date( now.getFullYear(), now.getMonth(), now.getDate(), now.getHours() + 1 );
-  UI.createEvent.model.d_end    = new Date( now.getFullYear(), now.getMonth(), now.getDate(), now.getHours() + 2 );
+  UI.createEvent.when.setDates();
   
   init();
   
-  updateDate('start', UI.createEvent.model.d_start);
-  updateDate('end',   UI.createEvent.model.d_end);
+  UI.createEvent.when.updateDates('start', UI.createEvent.when.model.d_start);
+  UI.createEvent.when.updateDates('end', UI.createEvent.when.model.d_end);
   
   subscribe();
   
   function init() {
     $startDate.datepicker({
       autoclose: true,
-      startDate: UI.createEvent.model.d_start
+      startDate: UI.createEvent.when.model.d_start
     });
     
     $startTime.timepicker({
@@ -446,7 +619,7 @@ UI.createEvent.when = function() {
     
     $endDate.datepicker({
       autoclose: true,
-      startDate: UI.createEvent.model.d_end
+      startDate: UI.createEvent.when.model.d_end
     });
     
     $endTime.timepicker({
@@ -462,14 +635,18 @@ UI.createEvent.when = function() {
   }
   
   function subscribe() {
-    $startTrigger.on('click', function() {
+    $startTrigger.on('click', function(e) {
+      e.preventDefault();
       $endRow.removeClass('hidden');
       $startTrigger.addClass('hidden');
+      UI.createEvent.when.model.d_endVisible = true;
     });
     
-    $endTrigger.on('click', function() {
+    $endTrigger.on('click', function(e) {
+      e.preventDefault();
       $endRow.addClass('hidden');
       $startTrigger.removeClass('hidden');
+      UI.createEvent.when.model.d_endVisible = false;
     });
 
     $startDate.on('changeDate', function() {
@@ -513,26 +690,6 @@ UI.createEvent.when = function() {
     });
   }
   
-  // start, d
-  // end, d
-  function updateDate(type, d) {
-    if (type == 'start') {
-      UI.createEvent.model.d_start = new Date( d );
-      
-      $startDate.datepicker( 'setDate', (UI.createEvent.model.d_start.getMonth() + 1) + '-' + UI.createEvent.model.d_start.getDate() + '-' + UI.createEvent.model.d_start.getFullYear() );
-      $startTime.timepicker( 'setTime', UI.createEvent.model.d_start.getHours() + ':' + UI.createEvent.model.d_start.getMinutes() );
-    }
-    
-    if (type == 'end') {
-      UI.createEvent.model.d_end = new Date( d );
-      
-      $endDate.datepicker( 'setDate', (UI.createEvent.model.d_end.getMonth() + 1) + '-' + UI.createEvent.model.d_end.getDate() + '-' + UI.createEvent.model.d_end.getFullYear() );
-      $endTime.timepicker( 'setTime', UI.createEvent.model.d_end.getHours() + ':' + UI.createEvent.model.d_end.getMinutes() );
-    }
-    
-    $endDate.datepicker( 'setStartDate', UI.createEvent.model.d_start );
-  }
-  
   // start
   // end
   // returns d;
@@ -570,9 +727,9 @@ UI.createEvent.when = function() {
     }
   }
   
-  // returns true if (UI.createEvent.model.d_end < UI.createEvent.model.d_start + 1 hour)
+  // returns true if (UI.createEvent.when.model.d_end < UI.createEvent.when.model.d_start + 1 hour)
   function compareDates() {
-    if ( UI.createEvent.model.d_end - UI.createEvent.model.d_start < 3600000 ) {
+    if ( UI.createEvent.when.model.d_end - UI.createEvent.when.model.d_start < 3600000 ) {
       return true;
     }
     
@@ -580,30 +737,77 @@ UI.createEvent.when = function() {
   }
   
   function onStartChange() {
-    updateDate('start', getDateTime('start'));
+    UI.createEvent.when.updateDates('start', getDateTime('start'));
     
     if ( compareDates() ) {
-      var d = UI.createEvent.model.d_start;
+      var d = UI.createEvent.when.model.d_start;
       
       d.setHours( d.getHours() + 1 );
-      updateDate( 'end', d );
+      UI.createEvent.when.updateDates( 'end', d );
     }
   }
   
   function onEndChange() {
-    updateDate('end', getDateTime('end'));
+    UI.createEvent.when.updateDates('end', getDateTime('end'));
   }
 }
 
-UI.createEvent.guests = function() {
-  var $list  = $('.guestsList');
-  var $first = $('.guestsList .guestsList-guest:first-child');
+UI.createEvent.when.setDates = function() {
+  var now                       = new Date();
   
-  // вешаю обработчик на ссылки в первой строке
+  UI.createEvent.when.model.d_start  = new Date( now.getFullYear(), now.getMonth(), now.getDate(), now.getHours() + 1 );
+  UI.createEvent.when.model.d_end    = new Date( now.getFullYear(), now.getMonth(), now.getDate(), now.getHours() + 2 );
+}
+
+UI.createEvent.when.updateDates = function(type, d) {
+  var $startDate      = $('#createEvent-start-date-group');
+  var $startTime      = $('#createEvent-start-time');
+  var $endDate        = $('#createEvent-end-date-group');
+  var $endTime        = $('#createEvent-end-time');
+  
+  if (type == 'start') {
+    UI.createEvent.when.model.d_start = new Date( d );
+    
+    isUpdating = true;
+    $startDate.datepicker( 'setDate', (UI.createEvent.when.model.d_start.getMonth() + 1) + '-' + UI.createEvent.when.model.d_start.getDate() + '-' + UI.createEvent.when.model.d_start.getFullYear() );
+    $startTime.timepicker( 'setTime', UI.createEvent.when.model.d_start.getHours() + ':' + UI.createEvent.when.model.d_start.getMinutes() );
+    isUpdating = false;
+  }
+  
+  if (type == 'end') {
+    UI.createEvent.when.model.d_end = new Date( d );
+    
+    isUpdating = true;
+    $endDate.datepicker( 'setDate', (UI.createEvent.when.model.d_end.getMonth() + 1) + '-' + UI.createEvent.when.model.d_end.getDate() + '-' + UI.createEvent.when.model.d_end.getFullYear() );
+    $endTime.timepicker( 'setTime', UI.createEvent.when.model.d_end.getHours() + ':' + UI.createEvent.when.model.d_end.getMinutes() );
+    isUpdating = false;
+  }
+  
+  $endDate.datepicker( 'setStartDate', UI.createEvent.when.model.d_start );
+}
+
+UI.createEvent.when.clean = function() {
+  UI.createEvent.when.setDates();
+  UI.createEvent.when.updateDates('start', UI.createEvent.when.model.d_start);
+  UI.createEvent.when.updateDates('end', UI.createEvent.when.model.d_end);
+  $('#createEvent-end').addClass('hidden');
+  $('#createEvent-start-trigger').removeClass('hidden');
+}
+
+UI.createEvent.guests = {};
+
+UI.createEvent.guests.dom = {
+  $list: $('.guestsList'),
+  $first: $('.guestsList .guestsList-guest:first-child')
+}
+
+UI.createEvent.guests.init = function() {
+  var $list  = UI.createEvent.guests.dom.$list;
+  var $first = UI.createEvent.guests.dom.$first;
+  
   addListeners( $first );
+  UI.createEvent.guests.manageLinksVisibility();
   
-  // обработчик на + добавляет строку в конец списка, вешает на нее обработчики и запускает парсер проверяющий, какие ссылки, в какой строке нужно открыть
-  // обработчик на - удаляет строку и запускает парсер проверяющий, какие ссылки, в какой строке нужно открыть
   function addListeners( $el ) {
     $remove = $el.find('.guestsList-trigger_remove');
     $add    = $el.find('.guestsList-trigger_add');
@@ -611,13 +815,13 @@ UI.createEvent.guests = function() {
     $remove.on('click', function(e) {
       e.preventDefault();
       $el.remove();
-      manageLinksVisibility();
+      UI.createEvent.guests.manageLinksVisibility();
     });
     
     $add.on('click', function(e) {
       e.preventDefault();
       addListeners( addElement() );
-      manageLinksVisibility();
+      UI.createEvent.guests.manageLinksVisibility();
     });
   }
   
@@ -633,26 +837,34 @@ UI.createEvent.guests = function() {
     
     return $el;
   }
+}
+
+UI.createEvent.guests.manageLinksVisibility = function() {
+  var $list  = UI.createEvent.guests.dom.$list;
+  var q      = $list.children('li').length;
   
-  function manageLinksVisibility() {
-    var q = $list.children('li').length;
+  $list.children('li').each(function(n, el) {
+    $remove = $(el).find('.guestsList-trigger_remove');
+    $add    = $(el).find('.guestsList-trigger_add');
     
-    $list.children('li').each(function(n, el) {
-      $remove = $(el).find('.guestsList-trigger_remove');
-      $add    = $(el).find('.guestsList-trigger_add');
-      
-      if (n < q - 1) {
-        $add.addClass('hidden');
-        $remove.removeClass('hidden');
-      } else if (q > 1) {
-        $add.removeClass('hidden');
-        $remove.removeClass('hidden');
-      } else {
-        $add.removeClass('hidden');
-        $remove.addClass('hidden');
-      }
-    })
-  }
+    if (n < q - 1) {
+      $add.addClass('hidden');
+      $remove.removeClass('hidden');
+    } else if (q > 1) {
+      $add.removeClass('hidden');
+      $remove.removeClass('hidden');
+    } else {
+      $add.removeClass('hidden');
+      $remove.addClass('hidden');
+    }
+  });
+}
+
+UI.createEvent.guests.clean = function() {
+  var $list  = UI.createEvent.guests.dom.$list;
+  
+  $list.find('li').not(':first-child').remove();
+  UI.createEvent.guests.manageLinksVisibility();
 }
 
 UI.createEvent.where = function() {
@@ -676,7 +888,6 @@ UI.createEvent.where = function() {
             + position.coords.latitude + ',' + position.coords.longitude 
             + '&key=AIzaSyDjdMGfSpv44b2bVuKVW8AxBGmXTVHTRzA'
     }).done(function(data) {
-      console.log(data);
       $geoInput.val( data.results[0].formatted_address || '' );
     }).always(function() {
       hideSpinner();
@@ -699,16 +910,26 @@ UI.createEvent.where = function() {
   }
 }
 
-UI.createEvent.validation = function() {
+UI.createEvent.form = {};
+
+UI.createEvent.form.init = function() {
   var $form     = $('#createEvent');
   var $name     = $('#createEvent-name');
   var $end      = $('#createEvent-end');
   var $endDate  = $('#createEvent-end-date');
   var $endTime  = $('#createEvent-end-date');
   var $help     = $end.find('.help-block');
-  
+  var $cancel   = $('#createEvent-cancel');
   
   $name.validator();
+  
+  $form.on('keyup keypress', ':input:not(textarea):not([type=submit])', function(e) {
+    var keyCode = e.keyCode;
+    if (keyCode === 13) { 
+      e.preventDefault();
+      return false;
+    }
+  });
   
   $form.on('submit', function(e) {
     e.preventDefault();
@@ -717,7 +938,7 @@ UI.createEvent.validation = function() {
     $name.validator('forceValidation');
     
     // validate end time
-    if (UI.createEvent.model.d_end - UI.createEvent.model.d_start <= 0) {
+    if (UI.createEvent.when.model.d_end - UI.createEvent.when.model.d_start <= 0) {
       $end.addClass('has-error');
       $help.removeClass('hidden');
       $endDate[0].setCustomValidity('invalid');
@@ -732,16 +953,71 @@ UI.createEvent.validation = function() {
     if ($form[0].checkValidity() === false) {
       return false;
     } else {
-      UI.core.applicationState = 'list';
+      UI.events.model.events.push( UI.createEvent.form.collectEvent() );
+      UI.createEvent.form.clean();
+      UI.core.model.applicationState = 'list';
       UI.core.viewBuilder();
     }
   });
+  
+  $cancel.on('click', function(e) {
+    e.preventDefault();
+    UI.createEvent.form.clean();
+    UI.core.model.applicationState = 'list';
+    UI.core.viewBuilder();
+  })
+}
+
+UI.createEvent.form.collectEvent = function() {
+  var event = {};
+  event.guests = [];
+  
+  event.name        = $('#createEvent-name').val();
+  event.type        = $('#createEvent-type').val();
+  event.startDate   = UI.createEvent.when.model.d_start.getDate();
+  event.startMonth  = UI.createEvent.when.model.monthNames[ UI.createEvent.when.model.d_start.getMonth() ];
+  event.startYear   = UI.createEvent.when.model.d_start.getFullYear();
+  event.startTime   = UI.createEvent.when.model.d_start.getHours()  + ':' + ('0' + UI.createEvent.when.model.d_start.getMinutes() ).slice(-2);
+  
+  if (UI.createEvent.when.model.d_endVisible) {
+    event.endDate   = UI.createEvent.when.model.d_end.getDate();
+    event.endMonth  = UI.createEvent.when.model.monthNames[ UI.createEvent.when.model.d_end.getMonth() ];
+    event.endYear   = UI.createEvent.when.model.d_end.getFullYear();
+    event.endTime   = UI.createEvent.when.model.d_end.getHours()  + ':' + ('0' + UI.createEvent.when.model.d_end.getMinutes() ).slice(-2);
+  }
+  
+  event.host      = $('#createEvent-host').val();
+  event.location  = $('#createEvent-location').val();
+  event.guests    = getGuests();
+  event.message   = $('#createEvent-message').val();
+  
+  function getGuests() {
+    var arr = [];
+    
+    $('#createEvent .guestsList .guestsList-guest').each(function() {
+      var guest = $(this).find('input').val();
+      
+      if (guest) {
+        arr.push(guest);
+      }
+    });
+    
+    return arr;
+  };
+  
+  return event;
+}
+
+UI.createEvent.form.clean = function() {
+  $('#createEvent')[0].reset();
+  UI.createEvent.when.clean();
+  UI.createEvent.guests.clean();
 }
 
 
 $(document).ready(function () {
   UI.core.init();
-  UI.events.init();
   UI.createEvent.init();
   UI.registration();
+  UI.events.init();
 });

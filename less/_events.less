@@ -72,12 +72,18 @@
         }
       }
     }
+    
+    &.event-when_onlyStart {
+      .event-when-startTime:after {
+        display: none;
+      }
+    }
   }
   
   .event-where,
   .event-guests {
     .event-fieldset-field {
-      margin-right: 0;
+      margin-right: .5em;
       display: inline-block;
       
       &:not(:last-child) .event-fieldset-value:after {

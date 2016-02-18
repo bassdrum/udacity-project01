@@ -6658,6 +6658,10 @@ button.close {
     display: none !important;
   }
 }
+html,
+body {
+  height: 100%;
+}
 .page-header .btn {
   position: relative;
   top: 5px;
@@ -6730,9 +6734,12 @@ label.required:after {
 .event .event-when.event-when_sameDate .event-when-endTime .glyphicon {
   display: none;
 }
+.event .event-when.event-when_onlyStart .event-when-startTime:after {
+  display: none;
+}
 .event .event-where .event-fieldset-field,
 .event .event-guests .event-fieldset-field {
-  margin-right: 0;
+  margin-right: .5em;
   display: inline-block;
 }
 .event .event-where .event-fieldset-field:not(:last-child) .event-fieldset-value:after,

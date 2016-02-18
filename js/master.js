@@ -9,7 +9,7 @@ var UI = {};
 
 $(document).ready(function () {
   UI.core.init();
-  UI.events.init();
   UI.createEvent.init();
   UI.registration();
+  UI.events.init();
 });

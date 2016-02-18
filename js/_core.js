@@ -16,12 +16,14 @@ UI.core.viewBuilder = function() {
   var $spinner      = $('.spinner_global');
   var $body         = $('body');
   
+  UI.events.process();
+  
   // login state
   if (UI.core.model.applicationState == 'registration') {
+    hideAll();
     showSpinner();
     
     setTimeout(function(){
-      hideAll();
       hideSpinner();
       $registration.removeClass('hidden');
     }, 1000);
@@ -29,10 +31,10 @@ UI.core.viewBuilder = function() {
   
   // events list state
   if (UI.core.model.applicationState == 'createEvent') {
+    hideAll();
     showSpinner();
     
     setTimeout(function(){
-      hideAll();
       hideSpinner();
       $createEvent.removeClass('hidden');
     }, 1000);
@@ -40,10 +42,10 @@ UI.core.viewBuilder = function() {
   
   // events list state
   if (UI.core.model.applicationState == 'list') {
+    hideAll();
     showSpinner();
     
     setTimeout(function(){
-      hideAll();
       hideSpinner();
       $list.removeClass('hidden');
     }, 1000);
